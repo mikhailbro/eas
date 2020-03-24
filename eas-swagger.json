@@ -154,7 +154,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PaymentInfo"
+                "$ref": "#/components/schemas/Payment"
               }
             }
           }
@@ -401,7 +401,6 @@
         "summary": "",
         "operationId": "delete-commencements-commencement-id",
         "description": "Delete a commencement (Eintritt)",
-        "requestBody": {},
         "responses": {
           "204": {
             "description": "No Content"
@@ -524,8 +523,7 @@
             "description": "No Content"
           }
         },
-        "description": "Delete a termination (Austritt)",
-        "requestBody": {}
+        "description": "Delete a termination (Austritt)"
       },
       "parameters": [
         {
@@ -561,7 +559,7 @@
   },
   "components": {
     "schemas": {
-      "PaymentInfo": {
+      "Payment": {
         "required": [
           "iban"
         ],
@@ -573,7 +571,8 @@
           "reference": {
             "type": "string"
           }
-        }
+        },
+        "description": "Zahlung"
       },
       "Commencement": {
         "type": "object",
@@ -687,7 +686,7 @@
       },
       "Match": {
         "type": "object",
-        "description": "E/A tinder ;)",
+        "description": "E/A match",
         "properties": {
           "match-id": {
             "type": "string"
@@ -705,7 +704,7 @@
             "$ref": "#/components/schemas/PensionFund"
           },
           "payment-info": {
-            "$ref": "#/components/schemas/PaymentInfo"
+            "$ref": "#/components/schemas/Payment"
           },
           "status": {
             "type": "string",
@@ -721,10 +720,15 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "match-id"
+        ]
       },
       "PensionFund": {
         "type": "object",
+        "description": "Vorsorgeeinrichtung (VE)",
+        "title": "PensionFund",
         "properties": {
           "uid": {
             "type": "string"
@@ -742,8 +746,207 @@
             "type": "string"
           }
         },
-        "description": "Vorsorgeeinrichtung (VE)",
-        "title": "PensionFund"
+        "required": [
+          "uid"
+        ]
+      },
+      "VestedBenefit": {
+        "type": "object",
+        "description": "FZL",
+        "title": "VestedBenefit",
+        "properties": {
+          "fzl-id": {
+            "type": "string"
+          },
+          "payment": {
+            "$ref": "#/components/schemas/Payment"
+          },
+          "person-ahv": {
+            "$ref": "#/components/schemas/PersonAHV"
+          },
+          "benefit-info": {
+            "$ref": "#/components/schemas/BenefitInformation"
+          }
+        },
+        "required": [
+          "fzl-id",
+          "person-ahv",
+          "benefit-info"
+        ]
+      },
+      "PersonAHV": {
+        "title": "PersonAHV",
+        "type": "object",
+        "description": "Person AHV",
+        "properties": {
+          "person-ahv-id": {
+            "type": "string"
+          },
+          "health-restriction": {
+            "$ref": "#/components/schemas/HealthRestriction"
+          },
+          "civil-status": {
+            "$ref": "#/components/schemas/CivilStatus"
+          }
+        },
+        "required": [
+          "person-ahv-id",
+          "health-restriction"
+        ]
+      },
+      "BenefitInformation": {
+        "title": "BenefitInformation",
+        "type": "object",
+        "description": "Leistungsdaten",
+        "properties": {
+          "benefit-info-id": {
+            "type": "string"
+          },
+          "transfer-reason": {
+            "$ref": "#/components/schemas/TransferReason"
+          },
+          "pledge": {
+            "$ref": "#/components/schemas/Pledge"
+          },
+          "purchasing": {
+            "$ref": "#/components/schemas/Purchasing"
+          },
+          "divorce": {
+            "$ref": "#/components/schemas/Divorce"
+          },
+          "wef": {
+            "$ref": "#/components/schemas/HousingSubsidy"
+          }
+        },
+        "required": [
+          "benefit-info-id",
+          "transfer-reason",
+          "pledge",
+          "purchasing",
+          "divorce",
+          "wef"
+        ]
+      },
+      "HealthRestriction": {
+        "title": "HealthRestriction",
+        "type": "object",
+        "description": "Gesundheitsvorbehalt",
+        "properties": {
+          "health-restriction-id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "health-restriction-id"
+        ]
+      },
+      "Transfer": {
+        "title": "Transfer",
+        "type": "object",
+        "description": "Transfer",
+        "properties": {
+          "transfer-id": {
+            "type": "string"
+          },
+          "sender": {
+            "$ref": "#/components/schemas/PensionFund"
+          },
+          "reciever": {
+            "$ref": "#/components/schemas/PensionFund"
+          },
+          "payment": {
+            "$ref": "#/components/schemas/Payment"
+          },
+          "fzl": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VestedBenefit"
+            }
+          }
+        },
+        "required": [
+          "transfer-id",
+          "sender",
+          "reciever"
+        ]
+      },
+      "TransferReason": {
+        "title": "TransferReason",
+        "type": "object",
+        "description": "Übertragungsgrund",
+        "properties": {
+          "transfer-reason-id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "transfer-reason-id"
+        ]
+      },
+      "CivilStatus": {
+        "title": "CivilStatus",
+        "type": "object",
+        "description": "Zivilstand",
+        "properties": {
+          "civil-status-id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "civil-status-id"
+        ]
+      },
+      "Divorce": {
+        "title": "Divorce",
+        "type": "object",
+        "description": "Scheidung",
+        "properties": {
+          "divorce-id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "divorce-id"
+        ]
+      },
+      "Purchasing": {
+        "title": "Purchasing",
+        "type": "object",
+        "description": "Einkauf",
+        "properties": {
+          "purchasing-id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "purchasing-id"
+        ]
+      },
+      "Pledge": {
+        "title": "Pledge",
+        "type": "object",
+        "description": "Verpfändung",
+        "properties": {
+          "pledge-id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "pledge-id"
+        ]
+      },
+      "HousingSubsidy": {
+        "title": "HousingSubsidy",
+        "type": "object",
+        "description": "WEF",
+        "properties": {
+          "wef-id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "wef-id"
+        ]
       }
     },
     "securitySchemes": {
