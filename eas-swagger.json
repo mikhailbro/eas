@@ -1,254 +1,28 @@
 {
-    "openapi" : "3.0.1",
-    "info" : {
-      "title" : "EAS API",
-      "description" : "EAS API Dokumentation based on AufE exchange and match",
-      "version" : "0.1"
-    },
-    "servers" : [ {
-      "url" : "https://localhost:8180/eas/api/v1"
-    } ],
-    "paths" : {
-      "/matches" : {
-        "get" : {
-          "operationId" : "getMatches",
-          "responses" : {
-            "default" : {
-              "description" : "default response",
-              "content" : {
-                "application/json" : {
-                  "schema" : {
-                    "type" : "array",
-                    "items" : {
-                      "$ref" : "#/components/schemas/Match"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "/matches/{matchId}" : {
-        "get" : {
-          "operationId" : "getMatch",
-          "parameters" : [ {
-            "name" : "matchId",
-            "in" : "path",
-            "required" : true,
-            "schema" : {
-              "type" : "string"
-            }
-          } ],
-          "responses" : {
-            "default" : {
-              "description" : "default response",
-              "content" : {
-                "application/json" : {
-                  "schema" : {
-                    "$ref" : "#/components/schemas/Match"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "/commencement" : {
-        "post" : {
-          "operationId" : "addCommencement",
-          "requestBody" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Commencement"
-                }
-              }
-            }
-          },
-          "responses" : {
-            "default" : {
-              "description" : "default response",
-              "content" : {
-                "application/json" : { }
-              }
-            }
-          }
-        }
-      },
-      "/termination" : {
-        "post" : {
-          "operationId" : "addTermination",
-          "requestBody" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Termination"
-                }
-              }
-            }
-          },
-          "responses" : {
-            "default" : {
-              "description" : "default response",
-              "content" : {
-                "application/json" : { }
-              }
-            }
-          }
-        }
-      },
-      "/matches/{matchId}/rejectBySender" : {
-        "post" : {
-          "description" : "allows the sender to reject the match",
-          "operationId" : "rejectMatchBySender",
-          "parameters" : [ {
-            "name" : "matchId",
-            "in" : "path",
-            "required" : true,
-            "schema" : {
-              "type" : "string"
-            }
-          } ],
-          "responses" : {
-            "default" : {
-              "description" : "default response",
-              "content" : {
-                "application/json" : { }
-              }
-            }
-          }
-        }
-      },
-      "/allPendingTerminations" : {
-        "post" : {
-          "operationId" : "addAllPendingTerminations",
-          "requestBody" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Terminations"
-                }
-              }
-            }
-          },
-          "responses" : {
-            "default" : {
-              "description" : "default response",
-              "content" : {
-                "application/json" : { }
-              }
-            }
-          }
-        }
-      },
-      "/matches/{matchId}/rejectByReceiver" : {
-        "post" : {
-          "description" : "allows the receiver to reject the match",
-          "operationId" : "rejectMatchByReceiver",
-          "parameters" : [ {
-            "name" : "matchId",
-            "in" : "path",
-            "required" : true,
-            "schema" : {
-              "type" : "string"
-            }
-          } ],
-          "responses" : {
-            "default" : {
-              "description" : "default response",
-              "content" : {
-                "application/json" : { }
-              }
-            }
-          }
-        }
-      },
-      "/matches/{matchId}/acceptByReceiver" : {
-        "post" : {
-          "description" : "allows the receiver to accept the match",
-          "operationId" : "acceptMatchByReceiver",
-          "parameters" : [ {
-            "name" : "matchId",
-            "in" : "path",
-            "required" : true,
-            "schema" : {
-              "type" : "string"
-            }
-          } ],
-          "requestBody" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/PaymentInfo"
-                }
-              }
-            }
-          },
-          "responses" : {
-            "default" : {
-              "description" : "default response",
-              "content" : {
-                "application/json" : { }
-              }
-            }
-          }
-        }
-      },
-      "/matches/{matchId}/acceptBySender" : {
-        "post" : {
-          "description" : "allows the sender to accept the match",
-          "operationId" : "acceptMatchBySender",
-          "parameters" : [ {
-            "name" : "matchId",
-            "in" : "path",
-            "required" : true,
-            "schema" : {
-              "type" : "string"
-            }
-          } ],
-          "responses" : {
-            "default" : {
-              "description" : "default response",
-              "content" : {
-                "application/json" : { }
-              }
-            }
-          }
-        }
-      },
-      "/allPendingCommencements" : {
-        "post" : {
-          "operationId" : "addAllPendingCommencements",
-          "requestBody" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Commencements"
-                }
-              }
-            }
-          },
-          "responses" : {
-            "default" : {
-              "description" : "default response",
-              "content" : {
-                "application/json" : { }
-              }
-            }
-          }
-        }
-      },
-      "/ping" : {
-        "get" : {
-          "operationId" : "ping",
-          "responses" : {
-            "default" : {
-              "description" : "default response",
-              "content" : {
-                "text/plain" : {
-                  "schema" : {
-                    "type" : "string"
+  "openapi": "3.0.1",
+  "info": {
+    "title": "EAS API",
+    "description": "EAS API Documentation, based on AufE exchange and match services",
+    "version": "0.1"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:8180/eas/api/v1"
+    }
+  ],
+  "paths": {
+    "/matches": {
+      "get": {
+        "operationId": "getMatches",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Match"
                   }
                 }
               }
@@ -257,173 +31,451 @@
         }
       }
     },
-    "components" : {
-      "schemas" : {
-        "PaymentInfo" : {
-          "required" : [ "iban" ],
-          "type" : "object",
-          "properties" : {
-            "iban" : {
-              "type" : "string"
-            },
-            "reference" : {
-              "type" : "string"
+    "/matches/{matchId}": {
+      "get": {
+        "operationId": "getMatch",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
-        },
-        "Terminations" : {
-          "type" : "object",
-          "properties" : {
-            "terminations" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/components/schemas/Termination"
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Match"
+                }
               }
-            }
-          }
-        },
-        "Commencement" : {
-          "required" : [ "birthday", "commencementAt", "firstName", "internalRef", "lastName", "sex", "sozv", "uid" ],
-          "type" : "object",
-          "properties" : {
-            "uid" : {
-              "type" : "string"
-            },
-            "sozv" : {
-              "type" : "string"
-            },
-            "commencementAt" : {
-              "type" : "string",
-              "format" : "date-time"
-            },
-            "birthday" : {
-              "type" : "string",
-              "format" : "date-time"
-            },
-            "firstName" : {
-              "type" : "string"
-            },
-            "lastName" : {
-              "type" : "string"
-            },
-            "sex" : {
-              "type" : "string",
-              "enum" : [ "M", "W", "UNKNOWN" ]
-            },
-            "internalRef" : {
-              "type" : "string"
-            },
-            "expiresAt" : {
-              "type" : "string",
-              "format" : "date-time"
-            }
-          }
-        },
-        "Commencements" : {
-          "type" : "object",
-          "properties" : {
-            "commencements" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/components/schemas/Commencement"
-              }
-            }
-          }
-        },
-        "Termination" : {
-          "required" : [ "birthday", "firstName", "internalRef", "lastName", "sex", "sozv", "terminationAt", "uid" ],
-          "type" : "object",
-          "properties" : {
-            "uid" : {
-              "type" : "string"
-            },
-            "sozv" : {
-              "type" : "string"
-            },
-            "terminationAt" : {
-              "type" : "string",
-              "format" : "date-time"
-            },
-            "birthday" : {
-              "type" : "string",
-              "format" : "date-time"
-            },
-            "firstName" : {
-              "type" : "string"
-            },
-            "lastName" : {
-              "type" : "string"
-            },
-            "sex" : {
-              "type" : "string",
-              "enum" : [ "M", "W", "UNKNOWN" ]
-            },
-            "internalRef" : {
-              "type" : "string"
-            },
-            "expiresAt" : {
-              "type" : "string",
-              "format" : "date-time"
-            }
-          }
-        },
-        "Match" : {
-          "type" : "object",
-          "properties" : {
-            "id" : {
-              "type" : "string"
-            },
-            "commencement" : {
-              "$ref" : "#/components/schemas/Commencement"
-            },
-            "termination" : {
-              "$ref" : "#/components/schemas/Termination"
-            },
-            "sendingVe" : {
-              "$ref" : "#/components/schemas/Ve"
-            },
-            "receivingVe" : {
-              "$ref" : "#/components/schemas/Ve"
-            },
-            "paymentInfo" : {
-              "$ref" : "#/components/schemas/PaymentInfo"
-            },
-            "status" : {
-              "type" : "string",
-              "enum" : [ "OPEN", "ACCEPTED_BY_RECEIVER", "REJECTED_BY_RECEIVER", "REJECTED_BY_SENDER", "CLOSED_BY_SENDER" ]
-            },
-            "expiresAt" : {
-              "type" : "string",
-              "format" : "date-time"
-            }
-          }
-        },
-        "Ve" : {
-          "type" : "object",
-          "properties" : {
-            "uid" : {
-              "type" : "string"
-            },
-            "name" : {
-              "type" : "string"
-            },
-            "street" : {
-              "type" : "string"
-            },
-            "zip" : {
-              "type" : "string"
-            },
-            "city" : {
-              "type" : "string"
             }
           }
         }
-      },
-      "securitySchemes" : {
-        "BasicAuth" : {
-          "type" : "http",
-          "scheme" : "basic"
+      }
+    },
+    "/commencement": {
+      "post": {
+        "operationId": "addCommencement",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Commencement"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/termination": {
+      "post": {
+        "operationId": "addTermination",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Termination"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/matches/{matchId}/rejectBySender": {
+      "post": {
+        "description": "allows the sender to reject the match",
+        "operationId": "rejectMatchBySender",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/allPendingTerminations": {
+      "post": {
+        "operationId": "addAllPendingTerminations",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Terminations"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/matches/{matchId}/rejectByReceiver": {
+      "post": {
+        "description": "allows the receiver to reject the match",
+        "operationId": "rejectMatchByReceiver",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/matches/{matchId}/acceptByReceiver": {
+      "post": {
+        "description": "allows the receiver to accept the match",
+        "operationId": "acceptMatchByReceiver",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentInfo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/matches/{matchId}/acceptBySender": {
+      "post": {
+        "description": "allows the sender to accept the match",
+        "operationId": "acceptMatchBySender",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/allPendingCommencements": {
+      "post": {
+        "operationId": "addAllPendingCommencements",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Commencements"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/ping": {
+      "get": {
+        "operationId": "ping",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
         }
       }
     }
+  },
+  "components": {
+    "schemas": {
+      "PaymentInfo": {
+        "required": [
+          "iban"
+        ],
+        "type": "object",
+        "properties": {
+          "iban": {
+            "type": "string"
+          },
+          "reference": {
+            "type": "string"
+          }
+        }
+      },
+      "Terminations": {
+        "type": "object",
+        "properties": {
+          "terminations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Termination"
+            }
+          }
+        },
+        "description": "Austritte"
+      },
+      "Commencement": {
+        "required": [
+          "birthday",
+          "commencementAt",
+          "firstName",
+          "internalRef",
+          "lastName",
+          "sex",
+          "sozv",
+          "uid"
+        ],
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string"
+          },
+          "sozv": {
+            "type": "string"
+          },
+          "commencementAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "M",
+              "W",
+              "UNKNOWN"
+            ]
+          },
+          "internalRef": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "Eintritt"
+      },
+      "Commencements": {
+        "type": "object",
+        "properties": {
+          "commencements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Commencement"
+            }
+          }
+        },
+        "description": "Eintritte"
+      },
+      "Termination": {
+        "required": [
+          "birthday",
+          "firstName",
+          "internalRef",
+          "lastName",
+          "sex",
+          "sozv",
+          "terminationAt",
+          "uid"
+        ],
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string"
+          },
+          "sozv": {
+            "type": "string"
+          },
+          "terminationAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "M",
+              "W",
+              "UNKNOWN"
+            ]
+          },
+          "internalRef": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "Austritt"
+      },
+      "Match": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "commencement": {
+            "$ref": "#/components/schemas/Commencement"
+          },
+          "termination": {
+            "$ref": "#/components/schemas/Termination"
+          },
+          "sendingVe": {
+            "$ref": "#/components/schemas/Ve"
+          },
+          "receivingVe": {
+            "$ref": "#/components/schemas/Ve"
+          },
+          "paymentInfo": {
+            "$ref": "#/components/schemas/PaymentInfo"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "ACCEPTED_BY_RECEIVER",
+              "REJECTED_BY_RECEIVER",
+              "REJECTED_BY_SENDER",
+              "CLOSED_BY_SENDER"
+            ]
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "E/A tinder ;)"
+      },
+      "Ve": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "zip": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          }
+        },
+        "description": "V-Einrichtung"
+      }
+    },
+    "securitySchemes": {
+      "mTLS": {
+        "type": "http",
+        "scheme": "mutual"
+      }
+    }
   }
+}
