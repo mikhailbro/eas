@@ -11,6 +11,209 @@
     }
   ],
   "paths": {
+    "/matches": {
+      "get": {
+        "operationId": "get-matches",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Match"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matches/{match-id}": {
+      "get": {
+        "operationId": "get-match",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Match"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "match-id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/matches/{match-id}/rejectBySender": {
+      "post": {
+        "description": "allows the sender to reject the match",
+        "operationId": "rejectMatchBySender",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "match-id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/matches/{match-id}/rejectByReceiver": {
+      "post": {
+        "description": "allows the receiver to reject the match",
+        "operationId": "rejectMatchByReceiver",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "match-id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/matches/{match-id}/acceptByReceiver": {
+      "post": {
+        "description": "allows the receiver to accept the match",
+        "operationId": "acceptMatchByReceiver",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentInfo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "match-id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/matches/{match-id}/acceptBySender": {
+      "post": {
+        "description": "allows the sender to accept the match",
+        "operationId": "acceptMatchBySender",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        },
+        "summary": ""
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "match-id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/ping": {
       "get": {
         "operationId": "ping",
@@ -35,6 +238,76 @@
           }
         },
         "description": "Check API availability"
+      }
+    },
+    "/terminations": {
+      "post": {
+        "operationId": "create-terminations",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Termination"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        },
+        "description": "Create terminations (Austritte)"
+      },
+      "put": {
+        "summary": "",
+        "operationId": "put-terminations",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Full update of terminations (Austritte)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Termination"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "",
+        "operationId": "patch-terminations",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Partial update of terminations (Austritte)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Termination"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/commencements": {
@@ -127,19 +400,11 @@
       "delete": {
         "summary": "",
         "operationId": "delete-commencements-commencement-id",
+        "description": "Delete a commencement (Eintritt)",
+        "requestBody": {},
         "responses": {
           "204": {
             "description": "No Content"
-          }
-        },
-        "description": "Delete a commencement (Eintritt)",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Commencement"
-              }
-            }
           }
         }
       },
@@ -212,76 +477,6 @@
         "description": "Read a commencement by commencement-id"
       }
     },
-    "/terminations": {
-      "post": {
-        "operationId": "create-terminations",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Termination"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "default response",
-            "content": {
-              "application/json": {}
-            }
-          }
-        },
-        "description": "Create terminations (Austritte)"
-      },
-      "put": {
-        "summary": "",
-        "operationId": "put-terminations",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "description": "Full update of terminations (Austritte)",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Termination"
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "summary": "",
-        "operationId": "patch-terminations",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "description": "Partial update of terminations (Austritte)",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Termination"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/terminations/{termination-id}": {
       "put": {
         "summary": "",
@@ -325,20 +520,12 @@
         "summary": "",
         "operationId": "delete--terminations-termination-id",
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "No Content"
           }
         },
         "description": "Delete a termination (Austritt)",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Termination"
-              }
-            }
-          }
-        }
+        "requestBody": {}
       },
       "parameters": [
         {
@@ -370,158 +557,6 @@
         },
         "description": "Read a termination (Austritt) by termination-id"
       }
-    },
-    "/matches": {
-      "get": {
-        "operationId": "get-matches",
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Match"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/matches/{-imatchd}": {
-      "get": {
-        "operationId": "get-match",
-        "parameters": [
-          {
-            "name": "matchId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Match"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/matches/{match-id}/rejectBySender": {
-      "post": {
-        "description": "allows the sender to reject the match",
-        "operationId": "rejectMatchBySender",
-        "parameters": [
-          {
-            "name": "matchId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {}
-            }
-          }
-        }
-      }
-    },
-    "/matches/{match-id}/rejectByReceiver": {
-      "post": {
-        "description": "allows the receiver to reject the match",
-        "operationId": "rejectMatchByReceiver",
-        "parameters": [
-          {
-            "name": "matchId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {}
-            }
-          }
-        }
-      }
-    },
-    "/matches/{match-id}/acceptByReceiver": {
-      "post": {
-        "description": "allows the receiver to accept the match",
-        "operationId": "acceptMatchByReceiver",
-        "parameters": [
-          {
-            "name": "matchId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PaymentInfo"
-              }
-            }
-          }
-        },
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {}
-            }
-          }
-        }
-      }
-    },
-    "/matches/{match-id}/acceptBySender": {
-      "post": {
-        "description": "allows the sender to accept the match",
-        "operationId": "acceptMatchBySender",
-        "parameters": [
-          {
-            "name": "matchId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {}
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -550,7 +585,7 @@
           "sozv": {
             "type": "string"
           },
-          "commencementAt": {
+          "commencement-at": {
             "type": "string",
             "format": "date-time"
           },
@@ -558,10 +593,10 @@
             "type": "string",
             "format": "date-time"
           },
-          "firstName": {
+          "firstname": {
             "type": "string"
           },
-          "lastName": {
+          "lastname": {
             "type": "string"
           },
           "sex": {
@@ -572,10 +607,10 @@
               "UNKNOWN"
             ]
           },
-          "internalRef": {
+          "internal-ref": {
             "type": "string"
           },
-          "expiresAt": {
+          "expires-at": {
             "type": "string",
             "format": "date-time"
           },
@@ -586,12 +621,12 @@
         "required": [
           "uid",
           "sozv",
-          "commencementAt",
+          "commencement-at",
           "birthday",
-          "firstName",
-          "lastName",
+          "firstname",
+          "lastname",
           "sex",
-          "internalRef",
+          "internal-ref",
           "commencement-id"
         ]
       },
@@ -605,7 +640,7 @@
           "sozv": {
             "type": "string"
           },
-          "terminationAt": {
+          "termination-at": {
             "type": "string",
             "format": "date-time"
           },
@@ -613,10 +648,10 @@
             "type": "string",
             "format": "date-time"
           },
-          "firstName": {
+          "firstname": {
             "type": "string"
           },
-          "lastName": {
+          "lastname": {
             "type": "string"
           },
           "sex": {
@@ -627,10 +662,10 @@
               "UNKNOWN"
             ]
           },
-          "internalRef": {
+          "internal-ref": {
             "type": "string"
           },
-          "expiresAt": {
+          "expires-at": {
             "type": "string",
             "format": "date-time"
           },
@@ -641,12 +676,12 @@
         "required": [
           "uid",
           "sozv",
-          "terminationAt",
+          "termination-at",
           "birthday",
-          "firstName",
-          "lastName",
+          "firstname",
+          "lastname",
           "sex",
-          "internalRef",
+          "internal-ref",
           "termination-id"
         ]
       },
@@ -654,7 +689,7 @@
         "type": "object",
         "description": "E/A tinder ;)",
         "properties": {
-          "id": {
+          "match-id": {
             "type": "string"
           },
           "commencement": {
@@ -663,13 +698,13 @@
           "termination": {
             "$ref": "#/components/schemas/Termination"
           },
-          "sendingPf": {
+          "sending-pf": {
             "$ref": "#/components/schemas/PensionFund"
           },
-          "receivingPf": {
+          "receiving-pf": {
             "$ref": "#/components/schemas/PensionFund"
           },
-          "paymentInfo": {
+          "payment-info": {
             "$ref": "#/components/schemas/PaymentInfo"
           },
           "status": {
@@ -682,7 +717,7 @@
               "CLOSED_BY_SENDER"
             ]
           },
-          "expiresAt": {
+          "expires-at": {
             "type": "string",
             "format": "date-time"
           }
