@@ -555,6 +555,14 @@
         },
         "description": "Read a termination (Austritt) by termination-id"
       }
+    },
+    "/transfers": {
+      "get": {
+        "summary": "Your GET endpoint",
+        "tags": [],
+        "responses": {},
+        "operationId": "get-transfers"
+      }
     }
   },
   "components": {
@@ -697,10 +705,10 @@
           "termination": {
             "$ref": "#/components/schemas/Termination"
           },
-          "sending-pf": {
+          "sender": {
             "$ref": "#/components/schemas/PensionFund"
           },
-          "receiving-pf": {
+          "receiver": {
             "$ref": "#/components/schemas/PensionFund"
           },
           "payment-info": {
@@ -743,6 +751,9 @@
             "type": "string"
           },
           "city": {
+            "type": "string"
+          },
+          "additional-name": {
             "type": "string"
           }
         },
