@@ -7,13 +7,13 @@
   },
   "servers": [
     {
-      "url": "https://localhost:8180/eas/api/v1"
+      "url": "/eas/api/v1"
     }
   ],
   "paths": {
     "/matches": {
       "get": {
-        "operationId": "getMatches",
+        "operationId": "get-matches",
         "responses": {
           "default": {
             "description": "default response",
@@ -33,7 +33,7 @@
     },
     "/matches/{matchId}": {
       "get": {
-        "operationId": "getMatch",
+        "operationId": "get-match",
         "parameters": [
           {
             "name": "matchId",
@@ -58,9 +58,16 @@
         }
       }
     },
-    "/commencement": {
-      "post": {
-        "operationId": "addCommencement",
+    "/commencements/{commencement-id}": {
+      "put": {
+        "summary": "",
+        "operationId": "put-commencements-commencement-id",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Full update of a commencement (Eintritt)",
         "requestBody": {
           "content": {
             "application/json": {
@@ -69,20 +76,106 @@
               }
             }
           }
-        },
+        }
+      },
+      "delete": {
+        "summary": "",
+        "operationId": "delete-commencements-commencement-id",
         "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {}
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "description": "Delete a commencement (Eintritt)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Commencement"
+              }
             }
           }
         }
+      },
+      "patch": {
+        "summary": "",
+        "operationId": "patch-commencements-commencement-id",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Partial update of a commencement (Eintritt)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Commencement"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "commencement-id",
+          "in": "path",
+          "required": true
+        }
+      ],
+      "post": {
+        "summary": "",
+        "operationId": "post-commencements-commencement-id",
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "description": "Create a commencement (Eintritt)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Commencement"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "",
+        "operationId": "get-commencements-commencement-id",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Commencement"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "description": "Read a commencement by commencement-id"
       }
     },
-    "/termination": {
-      "post": {
-        "operationId": "addTermination",
+    "/terminations/{termination-id}": {
+      "put": {
+        "summary": "",
+        "operationId": "put--terminations-termination-id",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Full update of a termination (Austritt)",
         "requestBody": {
           "content": {
             "application/json": {
@@ -91,15 +184,75 @@
               }
             }
           }
-        },
+        }
+      },
+      "patch": {
+        "summary": "",
+        "operationId": "patch--terminations-termination-id",
         "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {}
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Partial update of a termination (Austritt)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Termination"
+              }
             }
           }
         }
+      },
+      "delete": {
+        "summary": "",
+        "operationId": "delete--terminations-termination-id",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Delete a termination (Austritt)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Termination"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "termination-id",
+          "in": "path",
+          "required": true
+        }
+      ],
+      "get": {
+        "summary": "",
+        "operationId": "get-terminations-termination-id",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Termination"
+                }
+              }
+            }
+          }
+        },
+        "description": "Read a termination (Austritt) by termination-id"
       }
     },
     "/matches/{matchId}/rejectBySender": {
@@ -116,28 +269,6 @@
             }
           }
         ],
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {}
-            }
-          }
-        }
-      }
-    },
-    "/allPendingTerminations": {
-      "post": {
-        "operationId": "addAllPendingTerminations",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Terminations"
-              }
-            }
-          }
-        },
         "responses": {
           "default": {
             "description": "default response",
@@ -229,38 +360,162 @@
         }
       }
     },
-    "/allPendingCommencements": {
-      "post": {
-        "operationId": "addAllPendingCommencements",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Commencements"
-              }
-            }
-          }
-        },
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {}
-            }
-          }
-        }
-      }
-    },
     "/ping": {
       "get": {
         "operationId": "ping",
         "responses": {
-          "default": {
+          "200": {
             "description": "default response",
             "content": {
               "text/plain": {
                 "schema": {
                   "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "example-1": {}
+                }
+              }
+            }
+          }
+        },
+        "description": "Check API availability"
+      }
+    },
+    "/commencements": {
+      "post": {
+        "operationId": "create-commencements",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Commencement"
+                }
+              }
+            }
+          }
+        },
+        "description": "Create commencements (Eintritte)",
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      },
+      "put": {
+        "summary": "",
+        "operationId": "put-commencements",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Full update of a commencements array (Eintritte)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Commencement"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "",
+        "operationId": "patch-commencements",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Partial update of a commencements array (Eintritte)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Commencement"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/terminations": {
+      "post": {
+        "operationId": "create-terminations",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Termination"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        },
+        "description": "Create terminations (Austritte)"
+      },
+      "put": {
+        "summary": "",
+        "operationId": "put-terminations",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Full update of terminations (Austritte)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Termination"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "",
+        "operationId": "patch-terminations",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Partial update of terminations (Austritte)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Termination"
                 }
               }
             }
@@ -285,30 +540,9 @@
           }
         }
       },
-      "Terminations": {
-        "type": "object",
-        "properties": {
-          "terminations": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Termination"
-            }
-          }
-        },
-        "description": "Austritte"
-      },
       "Commencement": {
-        "required": [
-          "birthday",
-          "commencementAt",
-          "firstName",
-          "internalRef",
-          "lastName",
-          "sex",
-          "sozv",
-          "uid"
-        ],
         "type": "object",
+        "description": "Eintritt",
         "properties": {
           "uid": {
             "type": "string"
@@ -344,34 +578,26 @@
           "expiresAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "commencement-id": {
+            "type": "string"
           }
         },
-        "description": "Eintritt"
-      },
-      "Commencements": {
-        "type": "object",
-        "properties": {
-          "commencements": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Commencement"
-            }
-          }
-        },
-        "description": "Eintritte"
-      },
-      "Termination": {
         "required": [
+          "uid",
+          "sozv",
+          "commencementAt",
           "birthday",
           "firstName",
-          "internalRef",
           "lastName",
           "sex",
-          "sozv",
-          "terminationAt",
-          "uid"
-        ],
+          "internalRef",
+          "commencement-id"
+        ]
+      },
+      "Termination": {
         "type": "object",
+        "description": "Austritt",
         "properties": {
           "uid": {
             "type": "string"
@@ -407,12 +633,26 @@
           "expiresAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "termination-id": {
+            "type": "string"
           }
         },
-        "description": "Austritt"
+        "required": [
+          "uid",
+          "sozv",
+          "terminationAt",
+          "birthday",
+          "firstName",
+          "lastName",
+          "sex",
+          "internalRef",
+          "termination-id"
+        ]
       },
       "Match": {
         "type": "object",
+        "description": "E/A tinder ;)",
         "properties": {
           "id": {
             "type": "string"
@@ -423,11 +663,11 @@
           "termination": {
             "$ref": "#/components/schemas/Termination"
           },
-          "sendingVe": {
-            "$ref": "#/components/schemas/Ve"
+          "sendingPf": {
+            "$ref": "#/components/schemas/PensionFund"
           },
-          "receivingVe": {
-            "$ref": "#/components/schemas/Ve"
+          "receivingPf": {
+            "$ref": "#/components/schemas/PensionFund"
           },
           "paymentInfo": {
             "$ref": "#/components/schemas/PaymentInfo"
@@ -446,10 +686,9 @@
             "type": "string",
             "format": "date-time"
           }
-        },
-        "description": "E/A tinder ;)"
+        }
       },
-      "Ve": {
+      "PensionFund": {
         "type": "object",
         "properties": {
           "uid": {
@@ -468,7 +707,8 @@
             "type": "string"
           }
         },
-        "description": "V-Einrichtung"
+        "description": "Vorsorgeeinrichtung (VE)",
+        "title": "PensionFund"
       }
     },
     "securitySchemes": {
