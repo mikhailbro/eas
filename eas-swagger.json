@@ -13,10 +13,11 @@
   "paths": {
     "/ping": {
       "get": {
+        "summary": "Check API availability.",
         "operationId": "ping",
         "responses": {
           "200": {
-            "description": "default response",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
@@ -34,11 +35,12 @@
             }
           }
         },
-        "description": "Check API availability"
+        "description": "Check API availability."
       }
     },
     "/commencements": {
       "post": {
+        "summary": "Post new commencements (Eintritte).",
         "operationId": "create-commencements",
         "requestBody": {
           "content": {
@@ -52,7 +54,7 @@
             }
           }
         },
-        "description": "Post new commencements (Eintritte)",
+        "description": "Post new commencements (Eintritte).",
         "responses": {
           "201": {
             "description": "Created"
@@ -62,6 +64,7 @@
     },
     "/terminations": {
       "post": {
+        "summary": "Post new terminations (Austritte).",
         "operationId": "create-terminations",
         "requestBody": {
           "content": {
@@ -77,21 +80,19 @@
         },
         "responses": {
           "201": {
-            "description": "default response",
-            "content": {
-              "application/json": {}
-            }
+            "description": "Created"
           }
         },
-        "description": "Post new terminations (Austritte)"
+        "description": "Post new terminations (Austritte)."
       }
     },
     "/matches": {
       "get": {
+        "summary": "\"Get my matches\" from pension fund (VE) point of view. Could be used by a pension fund as a pull batch service. Pension fund will be identified by OAuth token based on uid of the company.",
         "operationId": "get-matches",
         "responses": {
           "200": {
-            "description": "default response",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -119,6 +120,7 @@
     },
     "/matches/{match-id}": {
       "get": {
+        "summary": "Get a match by match id.",
         "operationId": "get-match",
         "parameters": [
           {
@@ -132,7 +134,7 @@
         ],
         "responses": {
           "200": {
-            "description": "default response",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -145,7 +147,7 @@
             "description": "Not Found"
           }
         },
-        "description": "Get a match by its id"
+        "description": "Get a match by match id"
       },
       "parameters": [
         {
@@ -158,7 +160,7 @@
         }
       ],
       "patch": {
-        "summary": "",
+        "summary": "Patch match status (OPEN, ACCEPTED_BY_RECEIVER, REJECTED_BY_RECEIVER, REJECTED_BY_SENDER, CLOSED_BY_SENDER)",
         "operationId": "patch-matches-match-id",
         "responses": {
           "200": {
@@ -189,7 +191,7 @@
     },
     "/transfers": {
       "get": {
-        "summary": "Your GET endpoint",
+        "summary": "\"Get my transfers\" from pension fund (VE) point of view. Could be used by a pension fund as a pull batch service. Pension fund will be identified by OAuth token based on uid of the company.",
         "tags": [],
         "responses": {
           "200": {
@@ -236,7 +238,7 @@
         ]
       },
       "post": {
-        "summary": "",
+        "summary": "Post new transfers with predefined sender and reciever pension funds.",
         "operationId": "post-transfers",
         "responses": {
           "201": {
@@ -260,7 +262,7 @@
     },
     "/transfers/{transfer-id}": {
       "get": {
-        "summary": "Your GET endpoint",
+        "summary": "Get a transfer by transfer id.",
         "tags": [],
         "responses": {
           "200": {
@@ -278,7 +280,7 @@
           }
         },
         "operationId": "get-transfers-transfer-id",
-        "description": "Get a transfer by its id"
+        "description": "Get a transfer by transfer id."
       },
       "parameters": [
         {
