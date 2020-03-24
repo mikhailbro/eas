@@ -1,8 +1,8 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.0.2",
   "info": {
     "title": "EAS API",
-    "description": "EAS API Documentation, based on AufE exchange and match services",
+    "description": "EAS API Documentation, based on AuE exchange and match services",
     "version": "0.1"
   },
   "servers": [
