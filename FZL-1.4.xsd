@@ -1,0 +1,2478 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SCHEMA CHANGE 1.3
+     Major changes:
+     Removed VORMUNDSCHAFT.
+     Added exPartner for FZL_AUS_SCHEIDUNG.
+     Added NA for INVALIDITAET, GESUNDHEITS_VORBEHALT, ANTEIL_BVG, ERSTMALS_MITGETEILTE_FZL, BEI_ALTER_50,
+     BEI_HEIRAT
+     Changed most xs:date Elements to elementMitDatum.
+     -->
+<!-- SCHEMA CHANGE 1.3.1
+     Major changes:
+     ANTEIL_BVG must be set for FZL_AUS_SCHEIDUNG. Legal requirement since 01.01.2017. -->
+<!-- SCHEMA CHANGE 1.4
+     Major changes:
+     Added FZL_BEI_WEF to WEF.
+     Removed KEINE from BEI_HEIRAT.
+     Added attribute datenVollstaendig to SCHEIDUNG, WEF, EINKAEUFE, VERPFAENDUNGEN.
+     Changed all xs:date elements to date. Restricted to xs:date without timezone info. -->
+<xs:schema
+    targetNamespace="http://exchange.aeis.ch/xsd/FZL-1.4"
+
+    xmlns="http://exchange.aeis.ch/xsd/FZL-1.4"
+    xmlns:z="http://www.chaeis.ch/xsd/Zahlungsverkehr-1.1"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    version="1.4">
+
+  <xs:import namespace="http://www.chaeis.ch/xsd/Zahlungsverkehr-1.1" schemaLocation="Zahlungsverkehr-1.1.xsd"/>
+
+  <!-- ############ Allgemeine Typen ############ -->
+
+  <xs:complexType name="leer">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Leerer xs:complexType.
+        Aus Schema-Sicht unnötig. Generierter Java Code wird aber deutlich lesbarer.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        xs:complexType vide.
+        Inutile pour le schéma. Le code Java généré devient toutefois nettement plus lisible
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        xs:complexType vuoto.
+        Inutile dal punto di vista dello schema. Ma il codice Java generato diventa molto più leggibile.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:complexType>
+
+  <xs:simpleType name="token255">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Default String-Type.
+        Leitet von xs:token ab. Whitespace wird in ' ' gewandelt und collapsed.
+
+        Mindestlänge von 1 verhindert Leerstrings, was minOccurs unterlaufen würde.
+
+        Begrenzung auf 255 Zeichen ist beliebig und lediglich Sicherung.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Default String-Type.
+        Dérive de xs:token. Whitespace est transformé en ' ' et collapsed.
+
+        Longueur moyenne de 1 empêche les strings vides, ce qui échapperait à minOccurs.
+
+        La limitation à 255 signes est facultative et uniquement une sécurité.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Tipo stringa di default.
+        Deriva da xs:token. Il whitespace viene trasformato in ' ' e collassato.
+
+        La lunghezza minima di 1 impedisce stringhe vuote, essendo ciò inferiore a minOccurs.
+
+        La delimitazione a 255 caratteri è a piacimento, solo per fini di sicurezza.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:minLength value="1"/>
+      <xs:maxLength value="255"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="betrag">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Erlaubt Beträge bis 999.999.999.99. Währung ist CHF.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Permet des montants jusqu'à 999.999.999.99. La monnaie est le CHF.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Consente importi fino a 999.999.999.99. La valuta è CHF.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:decimal">
+      <xs:totalDigits value="11"/>
+      <xs:fractionDigits value="2"/>
+      <xs:minInclusive value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- SCHEMA CHANGE 1.4 add type 'date'. -->
+  <xs:simpleType name="date">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Schränkt xs:date auf Werte ohne Timezoneangabe ein.
+
+        Die Angabe einer Zeitzone führt je nach auswertendem System zu einem Versatz.
+
+        Beispiel:
+
+        2001-01-01Z => Mon Jan 01 01:00:00 CET 2001 (UTC/GMT)
+        2001-01-01+01:00 => Mon Jan 01 00:00:00 CET 2001 (Zürich Winterzeit)
+        2001-01-01+02:00 => Sun Dec 31 23:00:00 CET 2000 (Zürich Sommerzeit)
+
+        ausgelesen mit einer lokalen Zeitzone Zürich Winterzeit.
+
+        Um jegliche Zweifel auszuschliessen werden Datumswerte auf Angaben ohne Zeitzone eingeschränkt.
+
+        Das Problem ist ausführlich hier (https://www.w3.org/TR/timezone/#floating) beschrieben.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        restreint xs:date à des valeurs, sans indication du fuseau horaire.
+
+        L’indication d’un fuseau horaire conduit à un décalage en fonction du système utilisé.
+
+        Exemple :
+
+        2001-01-01Z => Mon Jan 01 01:00:00 CET 2001 (UTC/GMT)
+        2001-01-01+01:00 => Mon Jan 01 00:00:00 CET 2001 (Zurich heure d’hiver)
+        2001-01-01+02:00 => Sun Dec 31 23:00:00 CET 2000 (Zurich heure d’été)
+
+        est lu avec un fuseau horaire local heure d’hiver de Zurich.
+
+        Afin d’exclure tout doute, les valeurs des dates sont limitées à des indications sans zone horaire.
+
+        Le problème est décrit en détail ici (https://www.w3.org/TR/timezone/#floating).
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        limita xs:date a dei valori senza indicazione del fuso orario.
+
+        L’indicazione di un fuso orario provoca uno spostamento a seconda del sistema utilizzato.
+
+        Esempio:
+
+        2001-01-01Z => Mon Jan 01 01:00:00 CET 2001 (UTC/GMT)
+        2001-01-01+01:00 => Mon Jan 01 00:00:00 CET 2001 (Zurigo ora solare)
+        2001-01-01+02:00 => Sun Dec 31 23:00:00 CET 2000 (Zurigo ora estiva)
+
+        letta con un fuso orario locale Zurigo ora solare
+
+        Per escludere qualsiasi dubbio il valore della data viene limitato a delle indicazioni senza fuso orario.
+
+        Il problema è descritto dettagliatamente qui (https://www.w3.org/TR/timezone/#floating)
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:date">
+      <xs:pattern value="\d{4}-\d{2}-\d{2}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- SCHEMA CHANGE 1.4 Change DATUM to type 'date'. -->
+  <xs:complexType name="elementMitDatum">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Definiert ein Element, das entweder ein Element DATUM (date) oder ein Element DATUM_UNBEKANNT (leer) enthält.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Définit un élément qui contient soit un élément DATUM (date) soit un élément DATUM_UNBEKANNT (leer).
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Definisce un elemento che contiene un elemento DATUM (date) o un elemento DATUM_UNBEKANNT (leer).
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:element name="DATUM_UNBEKANNT" type="leer"/>
+      <xs:element name="DATUM" type="date"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- ############ Kontakt Typen ############ -->
+
+  <xs:simpleType name="geschlecht">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Geschlecht. Ist dieses nicht bekannt muss explizit 'unbekannt' angegeben werden.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Sexe. S'il n'est pas connu, il faut explicitement indiquer 'unbekannt'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Sesso. Se non si è a conoscenza, va indicato esplicitamente 'unbekannt'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="maennlich"/>
+      <xs:enumeration value="weiblich"/>
+      <xs:enumeration value="unbekannt"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="sprache">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Eine optionale, zu 'korrespondenzSprache' zusätzliche Angabe, zu einer Person.
+
+        'sprache' ist nicht weiter eingeschränkt.
+
+        Werte nach ISO 639-1 (Lowercase).
+        http://www.loc.gov/standards/iso639-2/php/code_list.php
+        http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+
+        Validiert wird auf zwei Buchstaben lowercase.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Une indication optionnelle, supplémentaire à 'korrespondenzSprache', sur une personne.
+
+        'sprache' n'est pas restreinte par ailleurs.
+
+        Valeurs selon ISO 639-1 (Lowercase).
+        http://www.loc.gov/standards/iso639-2/php/code_list.php
+        http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+
+        On valide sur deux lettres minuscules.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Un'indicazione opzionale rispetto a 'korrespondenzSprache' relativa a una persona.
+
+        'sprache' non ha ulteriori limitazioni.
+
+        Valori secondo ISO 639-1 (Lowercase).
+        http://www.loc.gov/standards/iso639-2/php/code_list.php
+        http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+
+        La convalida avviene su due lettere minuscole.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:language">
+      <xs:annotation>
+        <xs:documentation xml:lang="de">
+          Nur um sicher zu gehen da xs:language case insensitive ist und Grossbuchstaben erlaubt.
+        </xs:documentation>
+        <xs:documentation xml:lang="fr">
+          Uniquement par sécurité car xs:language est case insensitive et les majuscules sont permises.
+        </xs:documentation>
+        <xs:documentation xml:lang="it">
+          Solo per andare sul sicuro poiché xs:language è case insensitive e consente le lettere maiuscole.
+        </xs:documentation>
+      </xs:annotation>
+      <xs:pattern value="[a-z]{2}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="korrespondenzSprache">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Korrespondenzsprache. Beschränkt auf 'de', 'fr', 'it', 'en'.
+
+        Werte nach ISO 639-1 (Lowercase).
+        http://www.loc.gov/standards/iso639-2/php/code_list.php
+        http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Langue de correspondance Limitée à 'de', 'fr', 'it', 'en'.
+
+        Valeurs selon ISO 639-1 (Lowercase).
+        http://www.loc.gov/standards/iso639-2/php/code_list.php
+        http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Lingua per la corrispondenza. Limitata a 'de', 'fr', 'it', 'en'.
+
+        Valori secondo ISO 639-1 (Lowercase).
+        http://www.loc.gov/standards/iso639-2/php/code_list.php
+        http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="sprache">
+      <xs:enumeration value="de"/>
+      <xs:enumeration value="fr"/>
+      <xs:enumeration value="it"/>
+      <xs:enumeration value="en"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="land">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        ISO-3166 (ALPHA 2) (Uppercase)
+        http://www.iso.org/iso/home/standards/country_codes/country_names_and_code_elements.htm
+        http://www.iso.org/iso/home/standards/country_codes/iso-3166-1_decoding_table.htm
+
+        Validiert wird nur auf zwei Buchstaben Uppercase.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        ISO-3166 (ALPHA 2) (Uppercase)
+        http://www.iso.org/iso/home/standards/country_codes/country_names_and_code_elements.htm
+        http://www.iso.org/iso/home/standards/country_codes/iso-3166-1_decoding_table.htm
+
+        On valide uniquement sur deux lettres majuscules.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        ISO-3166 (ALPHA 2) (Uppercase)
+        http://www.iso.org/iso/home/standards/country_codes/country_names_and_code_elements.htm
+        http://www.iso.org/iso/home/standards/country_codes/iso-3166-1_decoding_table.htm
+
+        La convalida avviene solo su due lettere maiuscole.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:pattern value="[A-Z]{2}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="adressStatus">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Der simpleType 'adressStatus' wird verwendet, um Attribute 'adressStatus' zu definieren. Dieses Attribut
+        drückt dann aus, ob eine Anschrift bereits als nicht mehr gültig erkannt wurde. Hierdurch kann die abgebende
+        Einrichtung auch die zuletzt bekannte, nicht mehr gültige Anschrift mitteilen.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Le simpleType 'adressStatus' est utilisé pour définir 'adressStatus'. Cet attribut exprime alors si une adresse
+        a déjà été reconnue comme n'étant plus valable. Ainsi l'institution émettante peut aussi communiquer la dernière
+        adresse connue et plus valable.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Il simpleType 'adressStatus' viene utilizzato per definire attributi di 'adressStatus'. Questo attributo indica
+        se un indirizzo è stato già riconosciuto come non più valido. Così l'istituzione trasferente può comunicare
+        anche l'ultimo indirizzo noto, non più valido.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="UNBEKANNT_VERZOGEN"/>
+      <xs:enumeration value="GUELTIG"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="uid">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Unternehmens-Identifikationsnummer des Bundesamtes für Statistik.
+        https://www.bfs.admin.ch/bfs/de/home/register/unternehmensregister/unternehmens-identifikationsnummer.html
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Numéro d'identification d'entreprise de l'Office fédéral de la statistique.
+        https://www.bfs.admin.ch/bfs/fr/home/registres/registre-entreprises/numero-identification-entreprises.html
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Numero d'identificazione dell'impresa dell'Ufficio federale di statistica.
+        https://www.bfs.admin.ch/bfs/it/home/registri/registro-imprese/numero-identificazione-imprese.html
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:pattern value="(CHE|ADM)(\d{9})"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="telekomNummer">
+    <xs:simpleContent>
+      <xs:extension base="telekomNummerSimple">
+        <xs:attribute name="art" type="telekomArt" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:simpleType name="telekomNummerSimple">
+    <xs:restriction base="token255"/>
+  </xs:simpleType>
+  <xs:simpleType name="telekomArt">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="TELEFON"/>
+      <xs:enumeration value="FAX"/>
+      <xs:enumeration value="MOBILE"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="email">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Nicht validierte Email Werte.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Valeurs Email non validées.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Valori Email non convalidati.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="token255"/>
+  </xs:simpleType>
+
+  <xs:complexType name="firma">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Firmenkontaktdaten.
+        Wird verwendet für 'ABSENDER'/'EMPFAENGER'.
+
+        Erfordert vollständige Kontaktdaten. Zwingend erforderlich sind:
+        'NAME', 'STRASSE' und/oder 'POSTFACH', 'ORT', 'PLZ'.
+
+        Eine gesetzte UID hat Priorität gegenüber den anderen in diesem Element gesetzten Daten. Verarbeitende Systeme
+        sind NICHT verpflichtet potentielle Konflikte zwischen einer gesetzten UID und den restlichen Daten dieses
+        Elements zu erkennen.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Données de contact d'entreprise.
+        Est utilisé pour 'ABSENDER'/'EMPFAENGER'.
+
+        Nécessite des données de contact complètes. Sont absolument nécessaires:
+        'NAME', 'STRASSE' et/ou 'POSTFACH', 'ORT', 'PLZ'.
+
+        Une UID fixée a la priorité par rapport aux autres données fixées dans cet élément. Les systèmes de traitement
+        NE sont PAS obligés de reconnaître les conflits potentiels entre une UID fixée et les autres données de cet
+        élément.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Dati di contatto per aziende.
+        Si utilizza per 'ABSENDER'/'EMPFAENGER'.
+
+        Richiede dati di contatto completi. Obbligatori sono:
+        'NAME', 'STRASSE' e/o 'POSTFACH', 'ORT', 'PLZ'.
+
+        Un UID impostato ha priorità rispetto agli altri dati impostati in questo elemento. I sistemi di elaborazione
+        NON sono tenuti a individuare potenziali conflitti tra un UID impostato e gli altri dati di questo elemento.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="UID" type="uid" minOccurs="0"/>
+      <xs:element name="NAME" type="token255"/>
+      <xs:element name="NAME_ZUSATZ" type="token255" minOccurs="0"/>
+      <xs:element name="KONTAKT_PERSON" type="kontaktPerson" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="ADRESS_ZUSATZ" type="token255" minOccurs="0"/>
+      <xs:group ref="STRASSE_UND_ODER_POSTFACH"/>
+      <xs:element name="PLZ" type="token255"/>
+      <xs:element name="ORT" type="token255"/>
+      <xs:element name="LAND" type="land" minOccurs="0"/>
+      <xs:element name="KORRESPONDENZ_SPRACHE" type="korrespondenzSprache" minOccurs="0"/>
+      <xs:element name="TELEKOM_NUMMER" type="telekomNummer" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="EMAIL" type="email" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="firmaLenient">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Firmenkontaktdaten.
+        Wird verwendet für personOderFirmaLenient (=> 'PFANDGLAEUBIGER')
+
+        Stellt nur minimale Anforderungen an die Daten. Zwingend erforderlich sind:
+        'NAME' und 'ORT'.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Données de contact d'entreprise.
+        Est utilisé pour personOderFirmaLenient (=> 'PFANDGLAEUBIGER')
+
+        Pose des exigences minimales envers les données. Sont impérativement requis:
+        'NAME' et 'ORT'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Dati di contatto per aziende.
+        Si utilizza per personOderFirmaLenient (=> 'PFANDGLAEUBIGER')
+
+        Pone requisiti solo minimi ai dati. Obbligatori sono:
+        'NAME' e 'ORT'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="NAME" type="token255"/>
+      <xs:element name="NAME_ZUSATZ" type="token255" minOccurs="0"/>
+      <xs:element name="KONTAKT_PERSON" type="kontaktPerson" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="ADRESS_ZUSATZ" type="token255" minOccurs="0"/>
+      <xs:element name="STRASSE" type="token255" minOccurs="0"/>
+      <xs:element name="POSTFACH" type="token255" minOccurs="0"/>
+      <xs:element name="PLZ" type="token255" minOccurs="0"/>
+      <xs:element name="ORT" type="token255"/>
+      <xs:element name="LAND" type="land" minOccurs="0"/>
+      <xs:element name="KORRESPONDENZ_SPRACHE" type="korrespondenzSprache" minOccurs="0"/>
+      <xs:element name="TELEKOM_NUMMER" type="telekomNummer" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="EMAIL" type="email" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="adressStatus" type="adressStatus" default="GUELTIG"/>
+  </xs:complexType>
+
+  <xs:complexType name="kontaktPerson">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Beschreibt eine Person innerhalb einer Firma.
+
+        Zwingend erforderlich:
+        'NACHNAME', 'GESCHLECHT'.
+        ('GESCHLECHT' ist zwingend vorgeschriebenes Element, erlaubt aber die explizite Angabe 'UNBEKANNT'.)
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Décrit une personne au sein d'une entreprise.
+
+        Impérativement requis :
+        'NACHNAME', 'GESCHLECHT'.
+        ('GESCHLECHT' est un élément prescrit impérativement, mais il permet l'indication explicite 'UNBEKANNT'.)
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Descrive una persona nell'ambito di una ditta.
+
+        Obbligatori sono:
+        'NACHNAME', 'GESCHLECHT'.
+        ('GESCHLECHT' è un elemento prescritto, ma consente l'indicazione esplicita 'UNBEKANNT'.)
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="GESCHLECHT" type="geschlecht"/>
+      <xs:element name="TITEL" type="token255" minOccurs="0"/>
+      <xs:element name="VORNAME" type="token255" minOccurs="0"/>
+      <xs:element name="NACHNAME" type="token255"/>
+      <xs:element name="KORRESPONDENZ_SPRACHE" type="korrespondenzSprache" minOccurs="0"/>
+      <xs:element name="TELEKOM_NUMMER" type="telekomNummer" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="EMAIL" type="email" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3 Removed VORMUNDSCHAFT. -->
+  <xs:complexType name="personAHV">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Element definiert die Mindestangaben, die im Rahmen des Transfers einer FZL erforderlich sind:
+
+        Zwingend erforderlich sind:
+        'NACHNAME', 'AHV_NUMMER' oder 'SOZV_NUMMER'.
+
+        'GESCHLECHT', 'GEBURTSDATUM', 'INVALIDITAET', 'GESUNDHEITS_VORBEHALT' und 'ZIVILSTAND' sind zwingend
+        vorgeschriebene Elemente, erlauben aber die explizite Angabe 'UNBEKANNT' bzw. 'KEINE'.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        L'élément définit les indications minimales requises dans le cadre du transfert d'une PLP :
+
+        Sont absolument nécessaires :
+        'NACHNAME', 'AHV_NUMMER' ou 'SOZV_NUMMER'.
+
+        'GESCHLECHT', 'GEBURTSDATUM', 'INVALIDITAET', 'GESUNDHEITS_VORBEHALT' et 'ZIVILSTAND' sont des éléments
+        prescrits impérativement, mais permettant l'indication explicite 'UNBEKANNT' ou 'KEINE'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        L'elemento definisce le indicazioni minime necessarie nel trasferimento di una PLP.
+
+        Sono obbligatori:
+        'NACHNAME', 'AHV_NUMMER' oppure 'SOZV_NUMMER'.
+
+        'GESCHLECHT', 'GEBURTSDATUM', 'INVALIDITAET', 'GESUNDHEITS_VORBEHALT' e 'ZIVILSTAND' sono elementi prescritti,
+        ma consentono l'indicazione esplicita 'UNBEKANNT' risp. 'KEINE'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="GESCHLECHT" type="geschlecht"/>
+      <xs:element name="TITEL" type="token255" minOccurs="0"/>
+      <xs:element name="VORNAME" type="token255" minOccurs="0"/>
+      <xs:element name="NACHNAME" type="token255"/>
+      <xs:element name="GEBURTSDATUM" type="elementMitDatum"/>
+      <xs:group ref="SOZV_NUMMERN"/>
+      <xs:element name="INVALIDITAET" type="invaliditaet"/>
+      <xs:element name="GESUNDHEITS_VORBEHALT" type="gesundheitsvorbehalt"/>
+      <xs:element name="ZIVILSTAND" type="zivilstand"/>
+      <xs:element name="ADRESS_ZUSATZ" type="token255" minOccurs="0"/>
+      <xs:element name="STRASSE" type="token255" minOccurs="0"/>
+      <xs:element name="POSTFACH" type="token255" minOccurs="0"/>
+      <xs:element name="PLZ" type="token255" minOccurs="0"/>
+      <xs:element name="ORT" type="token255" minOccurs="0"/>
+      <xs:element name="LAND" type="land" minOccurs="0"/>
+      <xs:element name="SPRACHE" type="sprache" minOccurs="0"/>
+      <xs:element name="KORRESPONDENZ_SPRACHE" type="korrespondenzSprache" minOccurs="0"/>
+      <xs:element name="TELEKOM_NUMMER" type="telekomNummer" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="EMAIL" type="email" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="adressStatus" type="adressStatus" default="GUELTIG"/>
+  </xs:complexType>
+
+  <xs:complexType name="person">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Allgemeine Person - ohne AHV Spezifika.
+
+        Zwingend erforderlich:
+        'NACHNAME', 'ORT'.
+
+        'GESCHLECHT' und 'GEBURTSDATUM' sind zwingend vorgeschriebene Elemente, erlauben aber die explizite Angabe
+        'UNBEKANNT'.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Personne générale – sans spécificités AVS.
+
+        Impérativement requis :
+        'NACHNAME', 'ORT'.
+
+        'GESCHLECHT' et 'GEBURTSDATUM' sont des éléments impérativement prescrits, mais permettant l'indication
+        explicite 'UNBEKANNT'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Persona generica - senza dettagli specifici AVS.
+
+        Obbligatori sono:
+        'NACHNAME', 'ORT'.
+
+        'GESCHLECHT' e 'GEBURTSDATUM' sono elementi obbligatori, ma consentono l'indicazione esplicita 'UNBEKANNT'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="GESCHLECHT" type="geschlecht"/>
+      <xs:element name="TITEL" type="token255" minOccurs="0"/>
+      <xs:element name="VORNAME" type="token255" minOccurs="0"/>
+      <xs:element name="NACHNAME" type="token255"/>
+      <xs:element name="GEBURTSDATUM" type="elementMitDatum"/>
+      <xs:element name="ADRESS_ZUSATZ" type="token255" minOccurs="0"/>
+      <xs:element name="STRASSE" type="token255" minOccurs="0"/>
+      <xs:element name="POSTFACH" type="token255" minOccurs="0"/>
+      <xs:element name="PLZ" type="token255" minOccurs="0"/>
+      <xs:element name="ORT" type="token255"/>
+      <xs:element name="LAND" type="land" minOccurs="0"/>
+      <xs:element name="KORRESPONDENZ_SPRACHE" type="korrespondenzSprache" minOccurs="0"/>
+      <xs:element name="TELEKOM_NUMMER" type="telekomNummer" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="EMAIL" type="email" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="adressStatus" type="adressStatus" default="GUELTIG"/>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3 Added exPartner. -->
+  <!-- SCHEMA CHANGE 1.4 GEBURTSDATUM is now mandatory -->
+  <xs:complexType name="exPartner">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        'exPartner' beschreibt die Person, die im Scheidungsfalle zur Zahlung verpflichtet ist.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        'exPartner' décrit la personne, qui est tenue de payer en cas de divorce.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        'exPartner' descrive la persona, la quale é obbligata a pagare in caso di divorzio.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="GESCHLECHT" type="geschlecht"/>
+      <xs:element name="TITEL" type="token255" minOccurs="0"/>
+      <xs:element name="VORNAME" type="token255" minOccurs="0"/>
+      <xs:element name="NACHNAME" type="token255"/>
+      <xs:element name="GEBURTSDATUM" type="elementMitDatum"/>
+      <xs:group ref="SOZV_NUMMERN"/>
+      <xs:element name="ADRESS_ZUSATZ" type="token255" minOccurs="0"/>
+      <xs:element name="STRASSE" type="token255" minOccurs="0"/>
+      <xs:element name="POSTFACH" type="token255" minOccurs="0"/>
+      <xs:element name="PLZ" type="token255" minOccurs="0"/>
+      <xs:element name="ORT" type="token255" minOccurs="0"/>
+      <xs:element name="LAND" type="land" minOccurs="0"/>
+      <xs:element name="SPRACHE" type="sprache" minOccurs="0"/>
+      <xs:element name="KORRESPONDENZ_SPRACHE" type="korrespondenzSprache" minOccurs="0"/>
+      <xs:element name="TELEKOM_NUMMER" type="telekomNummer" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="EMAIL" type="email" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="adressStatus" type="adressStatus" default="GUELTIG"/>
+  </xs:complexType>
+
+  <xs:complexType name="personOderFirmaLenient">
+    <xs:choice>
+      <xs:element name="PERSON" type="person"/>
+      <xs:element name="FIRMA" type="firmaLenient"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- ############ PersonAHV Typen ############ -->
+
+  <!-- SCHEMA CHANGE 1.3 Documented AHV checksum validation. -->
+  <xs:simpleType name="ahvNummer">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        AHV-Nummer.
+        Validierung im Schema auf formale Struktur entsprechend RegEx
+        '\d{3}\.\d{2}\.\d{3}\.\d{3}' ('000.00.000.000')
+
+        Die Prüfziffer muss korrekt sein. Alternativ können die letzten drei Ziffern '000' sein.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Numéro AVS.
+        Validation dans le schéma uniquement sur structure formelle correspondant à RegEx
+        '\d{3}\.\d{2}\.\d{3}\.\d{3}' ('000.00.000.000')
+
+        Le chiffre de contrôle doit être correct. Alternativement, les trois derniers chiffres peuvent être '000'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Numero AVS.
+        Convalida nello schema solo relativa alla struttura formale RegEx
+        '\d{3}\.\d{2}\.\d{3}\.\d{3}' ('000.00.000.000')
+
+        La cifra deve essere corretta. In alternativa, le ultime tre cifre potranno essere '000'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:pattern value="\d{3}\.\d{2}\.\d{3}\.\d{3}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- SCHEMA CHANGE 1.3 Documented SOZV checksum validation. -->
+  <xs:simpleType name="sozvNummer">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Sozialversicherungsnummer.
+        Validierung im Schema nur auf formale Struktur entsprechend RegEx
+        '\d{3}\.\d{4}\.\d{4}\.\d{2}' ('000.0000.0000.00')
+
+        Die Prüfziffer muss korrekt sein.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Numéro d'assurance sociale.
+        Validation dans le schéma uniquement sur structure formelle correspondant à RegEx
+        '\d{3}\.\d{4}\.\d{4}\.\d{2}' ('000.0000.0000.00')
+
+        Le chiffre de contrôle doit être correct.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Numero di assicurazione sociale.
+        Convalida nello schema solo relativa alla struttura formale RegEx
+        '\d{3}\.\d{4}\.\d{4}\.\d{2}' ('000.0000.0000.00')
+
+        La cifra di controllo deve essere corretta.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:pattern value="\d{3}\.\d{4}\.\d{4}\.\d{2}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- SCHEMA CHANGE 1.3 Added NA for UEBERTRAGUNGSGRUND FZL_AUS_SCHEIDUNG. -->
+  <xs:complexType name="invaliditaet">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Invalidität.
+        Liegt keine Information vor, muss explizit 'UNBEKANNT' angegeben werden.
+        Wertebereich (0 - keine Invalidität bis 100 - vollständige Invalidität.)
+
+        Beim Übertragungsgrund 'FZL_AUS_SCHEIDUNG' ist 'NA' anzugeben.
+
+        Ansonsten ist 'NA' nicht zulässig.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Invalidité.
+        En l'absence d'une information, il faut indiquer 'UNBEKANNT' explicitement.
+        Fourchette de valeurs (0 - aucune invalidité à 100 - invalidité totale.)
+
+        Motif de transmission 'FZL_AUS_SCHEIDUNG' est 'NA' à insérer.
+
+        Sinon, 'NA' n’est pas permis.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Invalidità.
+        Se non fosse disponibile nessuna informazione, occorre indicare esplicitamente 'UNBEKANNT'.
+        Banda (0 - nessuna invalidità fino 100 - invalidità completa.)
+
+        Motivo del trasferimento 'FZL_AUS_SCHEIDUNG' é 'NA' da inserire.
+
+        Altrimenti, 'NA' non é consentito.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:element name="UNBEKANNT" type="leer"/>
+      <xs:element name="NA" type="leer"/>
+      <xs:element name="GRAD" type="invaliditaetsGrad"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:simpleType name="invaliditaetsGrad">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="100"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- SCHEMA CHANGE 1.3
+       Added NA for UEBERTRAGUNGSGRUND FZL_AUS_SCHEIDUNG.
+       BEGINN and ENDE are now elementMitDatum. ENDE is now mandatory. -->
+  <xs:complexType name="gesundheitsvorbehalt">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Bestehender Gesundheitsvorbehalt.
+        Besteht kein Gesundheitsvorbehalt muss 'KEINER' angegeben werden.
+        Besteht ein Gesundheitsvorbehalt sind 'BEGINN' und 'ENDE' anzugeben. Beide Elemente können 'UNBEKANNT' sein.
+        Liegt keine Information vor, muss explizit 'UNBEKANNT' angegeben werden.
+
+        Beim Übertragungsgrund 'FZL_AUS_SCHEIDUNG' ist 'NA' zu setzen.
+
+        Bei allen anderen Übertragungsgründen ist 'NA' nicht zulässig.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Réserve de santé existante.
+        S'il n'y a pas de réserve de santé, il faut indiquer 'KEINER'.
+        S'il existe une réserve de santé, le début doit être indiqué impérativement, car celui-ci définit la durée
+        maximale de la réserve de santé.
+        En l'absence d'une information, il faut indiquer explicitement 'UNBEKANNT'.
+
+        Motif de transmission 'FZL_AUS_SCHEIDUNG' est 'NA' à insérer.
+
+        Pour tous les autres motifs de transmission 'NA' n’est pas permis.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Riserva sullo stato di salute in corso.
+        Se non è in corso una riserva sullo stato di salute occorre indicare 'KEINER'.
+        Se è in corso una riserva sullo stato di salute, è obbligatorio indicare l'inizio è la fine, poiché esso
+        determina la durata massima della riserva sullo stato di salute.
+        Se non fosse disponibile nessuna informazione, occorre indicare esplicitamente UNBEKANNT'.
+
+        Motivo del trasferimento 'FZL_AUS_SCHEIDUNG' é 'NA' da inserire.
+
+        Per tutti gli altri motivi di trasferimento 'NA' non è consentito.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:element name="UNBEKANNT" type="leer"/>
+      <xs:element name="KEINER" type="leer"/>
+      <xs:element name="NA" type="leer"/>
+      <xs:sequence>
+        <xs:element name="BEGINN" type="elementMitDatum"/>
+        <xs:element name="ENDE" type="elementMitDatum"/>
+      </xs:sequence>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="zivilstand">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Aktueller Zivilstand.
+        Liegt keine Information vor, muss explizit 'UNBEKANNT' angegeben werden.
+        Elemente mit Datum beschreiben jeweils den Zeitpunkt der Zivilstandsänderung.
+        Ist das Datum unbekannt, so muss auch dieses explizit als 'UNBEKANNT' angegeben werden.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Etat civil actuel.
+        En l'absence d'information, il faut indiquer 'UNBEKANNT' explicitement.
+        Les éléments avec date décrivent la date respective du changement d'état civil.
+        Si la date est inconnue, il faut aussi l'indiquer explicitement comme 'UNBEKANNT'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Stato civile attuale.
+        Se non fosse disponibile nessuna informazione, occorre esplicitamente indicare 'UNBEKANNT'.
+        Gli elementi con data descrivono rispettivamente la data della variazione di stato civile.
+        Se la data fosse ignota, anche questo va indicato esplicitamente come 'UNBEKANNT'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:element name="UNBEKANNT" type="leer"/>
+      <xs:element name="LEDIG" type="leer"/>
+      <xs:element name="VERHEIRATET" type="elementMitDatum"/>
+      <xs:element name="VERWITWET" type="elementMitDatum"/>
+      <xs:element name="GESCHIEDEN" type="elementMitDatum"/>
+      <xs:element name="EINGETRAGENE_PARTNERSCHAFT" type="elementMitDatum"/>
+      <xs:element name="AUFGELOESTE_PARTNERSCHAFT" type="elementMitDatum"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3 Removed vormundschaft. -->
+
+  <!-- ############ FZL Typen ############ -->
+
+  <!-- SCHEMA CHANGE 1.4 Added attribute datenVollstaendig. -->
+  <xs:simpleType name="datenVollstaendig">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Attribut 'datenVollstaendig'
+
+        Bitte beachten bei:
+
+        - SCHEIDUNG
+        - WEF
+        - EINKAEUFE
+        - VERPFAENDUNGEN
+
+        Die oben genannten Daten beruhen häufig auf Angaben vorheriger VEs und können von der abgebenden VE nur
+        begrenzt vollständig und korrekt angegeben werden. Um dies zu berücksichtigen wurde das Attribut
+        'datenVollstaendig' eingeführt und macht eine Aussage über die Vollständigkeit der Angaben.
+
+        Beispiel VE A => VE B (Absender) => VE C (Empfänger):
+        - Vorsorgeeinrichtung A hat eine FZL an Vorsorgeeinrichtung B übertragen. VE A gibt 'WEF' 'UNBEKANNT an.
+
+        - Bei VE B wurde keine WEF Vorbezug durchgeführt.
+
+        - VE B überträgt die FZL an VE C. Für sich selber kann VE B die Angabe 'WEF' 'KEINE' machen. Dies wäre
+        allerdings irreführend für VE C, da unbekannt ist ob bei VE A Vorbezüge bestanden.
+
+        - Für VE C ist die Aussage 'WEF' 'KEINE' wertlos ohne eine Qualifizierung ob die Aussage vollständig ist oder
+        nicht.
+
+        'datenVollstaendig' darf nur auf 'true' gesetzt werden, wenn
+
+        - das Element (SCHEIDUNG, WEF, EINKAEUFE, VERPFAENDUNGEN) nicht 'UNBEKANNT' angibt - UND
+        - sichergestellt ist, dass alle relevanten Daten übermittelt werden. Dies ist der Fall wenn
+
+        a) die FZL neu bei der abgebenden VE erstellt wurde - oder
+        b) bei allen vorherigen Datenübertragungen das Attribut 'datenVollstaendig' 'true' gesetzt war (da das
+        Attribut vor Version 1.4 dieses Schemas nicht existierte, ist dies nur bei durchgängiger Verwendung von Schema
+        FZL-1.4 oder später möglich) - oder
+        c) auf 'analogem' Weg (Klärung durch Gericht, Recherche bei vorherigen VEs) die Vollständigkeit der Daten
+        sichergestellt ist.
+
+        'datenVollstaendig' darf auf 'true' gesetzt werden, auch wenn einzelne Elemente 'UNBEKANNT' sind. So kann z.B.
+        'WEF/FZL_BEI_WEF' 'UNBEKANNT' sein, bei 'WEF' selber darf trotzdem 'datenVollstaendig' auf 'true' sein. Der
+        Vorbezug an sich ist übermittelt und die Daten damit 'vollstaendig'.
+
+        Die Zielsetzung ist es mittelfristig auf manuelle Recherchen verzichten zu können.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Attribut 'datenVollstaendig'
+
+        Veuillez tenir compte des informations suivantes concernant:
+
+        - SCHEIDUNG
+        - WEF
+        - EINKAEUFE
+        - VERPFAENDUNGEN
+
+        Les données susmentionnées proviennent souvent d'indications d'anciennes IP et ces indications ne peuvent être
+        communiquées que de manière partiellement complète et correcte. Afin de tenir compte de cela, l'attribut
+        'datenVollstaendig' a été introduit; il indique si les données sont complètes.
+
+        Exemple IP A => IP B (expéditeur) => IP C (destinataire):
+        - l'institution de prévoyance A a transmis une PLP à l'institution de prévoyance B. L'IP A indique 'WEF'
+        'UNBEKANNT'.
+
+        - L'IP B, n'a effectué aucun versement anticipé EPL.
+
+        - L'IP B transmet la PLP à l'IP C. Pour elle-même, l'IP B peut indiquer 'WEF' 'KEINE'. Mais cela peut induire
+        l'IP C en erreur, car on ne sait pas si des versements anticipés ont été effectués dans le cadre de l'IP A.
+
+        - Pour l'IP C, l'indication 'WEF' 'KEINE' est sans valeur si celle-ci n'est pas qualifiée de complète ou non.
+
+        'datenVollstaendig' ne peut être réglé sur 'true' que si
+
+        - l'élément (SCHEIDUNG, WEF, EINKAEUFE, VERPFAENDUNGEN) n'indique pas 'UNBEKANNT' - ET
+        - qu'il est garanti que toutes les données pertinentes sont transmises. C'est le cas lorsque
+
+        a) la PLP a été constituée par l'IP émettrice – ou
+        b) dans le cas que dans toutes les transmissions de données précédentes, l'attribut 'datenvollstaendig' a été défini
+        par 'true' (étant donné qu'avant la version 1.4 ce schéma n'existait pas, cela n'est possible qu'avec
+        l'utilisation systématique du schéma PLP - 1.4 ou ultérieur) – ou
+        c) l'intégralité des données est garantie de manière 'analogue' (clarification par le tribunal, recherche dans les
+        IP précédentes).
+
+        'datenVollstaendig' peut être défini par 'true', même si certains éléments sont 'UNBEKANNT'. Ainsi,
+        'WEF/FZL_BEI_WEF' par exemple peut être défini par 'UNBEKANNT', et 'WEF', 'datenVollstaendig' peut quand
+        même être défini par 'true'. Le versement anticipé en soi est communiqué et les données sont donc 'complètes'.
+
+        L'objectif est de pouvoir renoncer aux recherches manuelles à moyen terme.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Attribut 'datenVollstaendig'
+
+        Da annotare sempre in caso di:
+
+        - SCHEIDUNG
+        - WEF
+        - EINKAEUFE
+        - VERPFAENDUNGEN
+
+        I dati sopra riportati si basano, spesso, su informazioni di precedenti istituti di previdenza e l’istituto di
+        previdenza cedente li può fornire solo parzialmente completi e corretti. Per poter tenere conto di questa
+        circostanza è stato inserito l’attributo 'datenVollstaendig' il quale informa circa la completezza dei dati.
+
+        Esempio istituto di previdenza A => istituto di previdenza B (mittente) => istituto di previdenza C
+        (destinatario):
+        - l’istituto di previdenza A ha trasmesso una PLP all’istituto di previdenza B. L’istituto di previdenza A
+        indica 'WEF' 'UNBEKANNT'.
+
+        - Presso l’istituto di previdenza B non è stato effettuato alcun prelievo anticipato PPA.
+
+        - L’istituto di previdenza B trasferisce la PLP all’istituto di previdenza C. L’istituto di previdenza B può
+        indicare per sé 'WEF' 'KEINE'. Tuttavia questo sarebbe fuorviante per l’istituto di previdenza C in quanto non è
+        noto se vi sono stati prelievi anticipati presso l’istituto di previdenza A.
+
+        - Per l’istituto di previdenza C la dichiarazione 'WEF' 'KEINE' non ha alcun valore senza specificare se tale
+        affermazione è completa o no.
+
+        'datenVollstaendig' può essere impostato su 'true' solo se
+
+        - l’elemento (SCHEIDUNG, WEF, EINKAEUFE, VERPFAENDUNGEN) non indica 'UNBEKANNT' - E
+        - garantisce che tutti i dati rilevanti siano stati trasmessi. È questo il caso in cui
+
+        a) è stato creato una nuova PLP presso l’istituto di previdenza cedente - oppure
+        b) l’attributo 'datenVollstaendig' era stato impostato su 'true' per tutti i trasferimenti precedenti di dati
+        (poiché questo attributo non esisteva prima della versione 1.4 di questo schema, ciò è possibile solo
+        utilizzando costantemente lo schema FZL-1.4 o successivi) - oppure
+        c) è accertata la completezza dei dati per via 'analog' (chiarimento da parte del tribunale, ricerca presso
+        istituti di previdenza precedenti).
+
+        'datenVollstaendig' può essere impostato su 'true' anche quando singoli elementi sono 'UNBEKANNT'.
+        'WEF/FZL_BEI_WEF', per esempio, può quindi essere 'UNBEKANNT', tuttavia nello stesso 'WEF' 'datenVollstaendig'
+        deve sempre essere impostato su 'true'. Il prelievo anticipato in sé è stato trasmesso e i dati sono dunque
+        'completi'.
+
+        L’obiettivo è di riuscire, nel breve termine, a fare a meno delle ricerche manuali.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:boolean"/>
+  </xs:simpleType>
+
+  <xs:complexType name="leistungsdaten">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Leistungsdaten fasst alle FZL relevanten Daten zusammen.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Les données de prestation récapitulent toutes les données pertinentes des PLP.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        I dati di prestazione incorporano tutti i dati rilevanti delle PLP.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="UEBERTRAGUNGSGRUND" type="uebertragungsgrund"/>
+      <!-- SCHEMA CHANGE 1.4 Documented 5% limit. (This was always implemented, but not documented.) -->
+      <xs:element name="FREIZUEGIGKEITSLEISTUNG" type="betrag">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Bei Einzelzahlung MUSS 'ZAHLUNG' mindestens so gross wie die zugehörige 'FREIZUEGIGKEITSLEISTUNG' sein. Dies
+            ermöglicht angefallene Zinsbeträge zwischen Austritts- und Valutadatum zu berücksichtigen.
+
+            Der Betrag der Zahlung darf die 'FREIZUEGIGKEITSLEISTUNG' aber nicht um mehr als 5% überschreiten.
+
+            Bei Sammelzahlung MUSS die SUMME der 'FREIZUEGIGKEITSLEISTUNG' Werte mit der ZAHLUNG exakt(!)
+            übereinstimmen.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            En cas de paiement individuel, 'ZAHLUNG' DOIT être au moins équivalent à la 'FREIZUEGIGKEITSLEISTUNG'
+            correspondante. Cela permet de prendre en compte les intérêts courus entre la sortie et la date de valeur
+            (Valuta).
+
+            Le montant du paiement ne doit cependant pas excéder la valeur de 'FREIZUEGIGKEITSLEISTUNG' de plus de 5%.
+
+            En cas de paiement collectif, la SOMME des valeurs de 'FREIZUEGIGKEITSLEISTUNG' DOIT correspondre exactement
+            (!) au 'ZAHLUNG'.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Nel caso di pagamento singolo, 'ZAHLUNG' DEVE avere almeno la stessa entità della corrispondente
+            'FREIZUEGIGKEITSLEISTUNG'. Questo permette di tener conto degli interessi maturati tra la data di uscita e
+            quella di valuta.
+
+            L’importo del pagamento non può però superare la 'FREIZUEGIGKEITSLEISTUNG' di oltre il 5%.
+
+            Nel caso di pagamento collettivo, la SUMME dei valori della 'FREIZUEGIGKEITSLEISTUNG' DEVE coincidere
+            esattamente(!) con 'ZAHLUNG'.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <!-- SCHEMA CHANGE 1.3
+           Added NA for UEBERTRAGUNGSGRUND FZL_AUS_SCHEIDUNG and FREIE_STIFTUNGSMITTEL (Type betragUnbekannt =>
+           betragUnbekanntNA).
+           Added restriction concerning UEBERTRAGUNGSGRUND SONDERMASSNAHME. -->
+      <!-- SCHEMA CHANGE 1.3.1
+           Changed use of NA. NA is no longer allowed for UEBERTRAGUNGSGRUND FZL_AUS_SCHEIDUNG.
+           Since 01.01.2017 ANTEIL_BVG must be reported for FZL_AUS_SCHEIDUNG. -->
+      <xs:element name="ANTEIL_BVG" type="betragUnbekanntNA">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Beim Übertragungsgrund 'SONDERMASSNAHME' muss ANTEIL_BVG gleich FREIZUEGIGKEITSLEISTUNG sein.
+            Beim Übertragungsgrund 'FREIE_STIFTUNGSMITTEL' ist 'NA' anzugeben.
+
+            Ansonsten ist 'NA' nicht zulässig.
+
+            Liegt keine Information vor, ist 'UNBEKANNT' anzugeben.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Si le motif de transmission est 'SONDERMASSNAHME', ANTEIL_BVG doit être égal à FREIZUEGIGKEITSLEISTUNG.
+            Si le motif de transmission est 'FREIE_STIFTUNGSMITTEL', il faut indiquer 'NA'.
+
+            Sinon, 'NA' n'est pas admis.
+
+            En l'absence d'information, il faut indiquer 'UNBEKANNT'.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Se il motivo del trasferimento è 'SONDERMASSNAHME', ANTEIL_BVG deve essere uguale a FREIZUEGIGKEITSLEISTUNG.
+            Se il motivo di trasferimento è 'FREIE_STIFTUNGSMITTEL' inserire 'NA'.
+
+            Negli altri casi 'NA' non è consentito.
+
+            In assenza di informazioni, occorre indicare 'UNBEKANNT'.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TEILUEBERWEISUNG" type="leer" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Ist dieses Element vorhanden handelt es sich um eine Teilüberweisung.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Si cet élément est disponible, il s'agit d'un virement partiel.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Se questo elemento è presente, si tratta di un bonifico parziale.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <!-- SCHEMA CHANGE 1.3
+           Added NA for UEBERTRAGUNGSGRUND FZL_AUS_SCHEIDUNG (Type betragDatumUnbekannt => betragDatumUnbekanntNA).  -->
+      <xs:element name="ERSTMALS_MITGETEILTE_FZL" type="betragDatumUnbekanntNA">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Beim Übertragungsgrund 'FZL_AUS_SCHEIDUNG' ist 'NA' anzugeben.
+
+            Ansonsten ist 'NA' nicht zulässig.
+
+            Liegt keine Information vor, ist 'UNBEKANNT' anzugeben.
+
+            Wird ein Betrag angegeben, kann 'DATUM' auch 'DATUM_UNBEKANNT' sein.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Si le motif de la transmission est 'FZL_AUS_SCHEIDUNG', il faut insérer 'NA'.
+
+            Sinon, 'NA' n’est pas permis.
+
+            En l'absence d'information, il faut indiquer 'UNBEKANNT'.
+
+            Si un montant est indiqué,  'DATUM' peut aussi être 'DATUM_UNBEKANNT'.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Motivo del trasferimento 'FZL_AUS_SCHEIDUNG' é 'NA' da inserire.
+
+            Altrimenti, 'NA' non é consentito.
+
+            Se non fosse disponibile nessuna informazione, occorre indicare esplicitamente 'UNBEKANNT'.
+
+            Il montante viene indicato, può essere che 'DATUM' anche 'DATUM_UNBEKANNT'.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <!-- SCHEMA CHANGE 1.3 Added NA for UEBERTRAGUNGSGRUND FZL_AUS_SCHEIDUNG. -->
+      <xs:element name="BEI_ALTER_50" type="betragUnbekanntNA">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Beschreibt den Saldo FZL bei Alter 50 bezogen auf das Austrittsdatum.
+
+            Bei einem Alter unter 50 sowie beim Übertragungsgrund 'FZL_AUS_SCHEIDUNG' ist 'NA' anzugeben. Ansonsten
+            ist 'NA' nicht zulässig.
+
+            Liegt keine Information vor, ist 'UNBEKANNT' anzugeben.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Décrit le solde PLP à l'âge de 50 ans en relation avec la date de sortie.
+       
+            A un âge inférieur à 50 ans et avec un motif de transmission 'FZL_AUS_SCHEIDUNG' il faut insérer'NA'.
+            Sinon, 'NA' n’est pas permis.
+
+            En l'absence d'information, il faut indiquer 'UNBEKANNT'.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Descrive il saldo della PLP all'età 50 riferendosi alla data d’uscita.
+
+            Per un età inferiore a 50 come il motivo di trasferimento è 'NA' da inserire. Altrimenti, 'NA' non é
+            consentito.
+
+            Se non fosse disponibile nessuna informazione, occorre indicare esplicitamente 'UNBEKANNT'.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <!-- SCHEMA CHANGE 1.3
+           Changed use of NA. Now additionally allowed for FZL_AUS_SCHEIDUNG.
+           Changed use of KEINE. Now only allowed for age < 25 or marriage before 01.01.1995. -->
+      <!-- SCHEMA CHANGE 1.4
+           Removed KEINE. Please use BETRAG 0.00 instead.
+           (betragBvgDatumUnbekanntKeineNA => betragBvgDatumUnbekanntNA).
+           (This was a real 'error' in the schema. The marriage date could only be validated based on the date value
+            contained in this element. KEINE as value for this element didn't allow for a date value => the document
+            was rejected as invalid.) -->
+      <xs:element name="BEI_HEIRAT" type="betragBvgDatumUnbekanntNA">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Beschreibt den Saldo FZL bei Heirat.
+
+            Bei Zivilstand 'LEDIG' sowie beim Übertragungsgrund 'FZL_AUS_SCHEIDUNG' ist 'NA' anzugeben.
+
+            Ansonsten ist 'NA' nicht zulässig.
+
+            Liegt keine Information vor, ist 'UNBEKANNT' anzugeben.
+
+            Das Datum der Heirat bzw. der eingetragenen Partnerschaft muss angegeben werden. Das Datum kann
+            'DATUM_UNBEKANNT' sein.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Décrit le solde de la PLP à la date du mariage.
+
+            Si l'état civil est 'LEDIG', ainsi que le motif de transmission 'FZL_AUS_SCHEIDUNG', 'NA' doit être indiqué.
+
+            Sinon, 'NA' n'est pas admis.
+
+            En l'absence d'information, il faut indiquer 'UNBEKANNT'.
+
+            La date du mariage ou du partenariat enregistré doit être indiquée. La date peut être 'DATUM_UNBEKANNT'.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Descrive il saldo della PLP al momento del matrimonio.
+
+            In caso di stato civile 'LEDIG' o motivo di trasferimento 'FZL_AUS_SCHEIDUNG' inserire 'NA'.
+
+            Negli altri casi ‘NA’ non è consentito.
+
+            In assenza di informazioni, occorre indicare 'UNBEKANNT'.
+
+            Deve essere indicata la data del matrimonio oppure dell’unione domestica. La data può essere
+            'DATUM_UNBEKANNT'.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <!-- SCHEMA CHANGE 1.3
+           Added explicit documentation.
+           Changed use of NA. Now additionally allowed for ZIVILSTAND LEDIG regardless of UEBERTRAGUNGSGRUND and
+           otherwise newly restricted to UEBERTRAGUNGSGRUND FZL_AUS_SCHEIDUNG. -->
+      <!-- SCHEMA CHANGE 1.4
+           Changed type from vorbezuege => vorbezuegeScheidung. (Structure of vorbezug remains unchanged.)
+           Added attribute datenVollstaendig.
+           Documented use of DATUM_UNBEKANNT with summed values. -->
+      <xs:element name="SCHEIDUNG" type="vorbezuegeScheidung">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Bestehen keine Vorbezüge, ist 'KEINE' anzugeben.
+
+            Das 'DATUM' des Vorbezuges bzw. der Rückzahlung kann 'DATUM_UNBEKANNT' sein.
+
+            Beim Übertragungsgrund 'FZL_AUS_SCHEIDUNG' sowie beim Zivilstand 'LEDIG' ist 'NA' anzugeben.
+
+            Ansonsten ist 'NA' nicht zulässig.
+
+            Liegt keine Information vor, ist 'UNBEKANNT' anzugeben.
+
+            Vorbezüge müssen einzeln angegeben werden und dürfen nicht summiert werden. Sollte dies aus technischen
+            Gründen nicht möglich sein, MUSS 'DATUM' auf 'DATUM_UNBEKANNT' gesetzt sein. (Bei summierten Angaben kann
+            Datum nicht mehr korrekt angegeben werden.)
+
+            Rückzahlungen dürfen - müssen aber nicht - summiert als einzelner Wert angegeben werden. Bei summierten
+            Angaben MUSS 'DATUM' 'DATUM_UNBEKANNT' sein.
+
+            Die Summe der Rückzahlungen darf nicht grösser als die Summe der Vorbezüge sein.
+
+            Bitte Hinweise zum Attribut 'datenVollstaendig' beachten.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            En l'absence de versements anticipés, indiquer 'KEINE'.
+
+            La 'DATE' du versement anticipé ou du remboursement peut être 'DATUM_UNBEKANNT'.
+
+            Si le motif de transmission est 'FZL_AUS_SCHEIDUNG' et l'état civil 'LEDIG', indiquer 'NA'.
+
+            Sinon, 'NA' n'est pas admis.
+
+            En l'absence d'information, il faut indiquer 'UNBEKANNT'.
+
+            Les versements anticipés doivent être saisis séparément et ne doivent pas être additionnés. Si cela n'est
+            pas possible pour des raisons techniques, 'DATUM' DOIT être défini par 'DATUM_UNBEKANNT'. (Pour les données
+            additionnées, la date ne peut plus être indiquée correctement.)
+
+            Les remboursements peuvent, mais ne doivent pas nécessairement être saisis sous la forme d'une seule valeur
+            additionnée. Pour les données additionnées, 'DATUM' DOIT être 'DATUM_UNBEKANNT'.
+
+            La somme des remboursements ne doit pas excéder la somme des versements anticipés.
+
+            Veuillez observer les remarques concernant l'attribut 'datenVollstaendig'.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Se non si sono verificati prelievi anticipati indicare 'KEINE'.
+
+            La 'DATUM' del prelievo anticipato ovvero del rimborso può essere 'DATUM_UNBEKANNT'.
+
+            Se il motivo del trasferimento è 'FZL_AUS_SCHEIDUNG' o in caso di stato civile 'LEDIG' inserire 'NA'.
+
+            Negli altri casi 'NA' non è consentito.
+
+            In assenza di informazioni, occorre indicare 'UNBEKANNT'.
+
+            I prelievi anticipati devono essere inseriti singolarmente e non possono essere sommati. Se, per motivi
+            tecnici, ciò non fosse possibile, 'DATUM' DEVE essere impostata su 'DATUM_UNBEKANNT'. (in caso di
+            informazioni cumulate la data non può più essere inserita correttamente).
+
+            I rimborsi possono, ma non devono, essere sommati e inseriti come valore unico. In caso di informazioni
+            cumulate 'DATUM' DEVE essere 'DATUM_UNBEKANNT'.
+
+            La somma dei rimborsi non deve superare la somma dei prelievi anticipati.
+
+            Osservare le indicazioni sull’attributo 'datenVollstaendig'.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <!-- SCHEMA CHANGE 1.3
+           Added explicit documentation.
+           Changed use of NA. Now newly restricted to UEBERTRAGUNGSGRUND FZL_AUS_SCHEIDUNG. -->
+      <!-- SCHEMA CHANGE 1.4
+           Changed type from vorbezuege => vorbezuegeWef.
+           Changed structure of vorbezugWef to allow for FZL_BEI_WEF.
+           Added attribute datenVollstaendig.
+           Documented use of DATUM_UNBEKANNT with summed values. -->
+      <xs:element name="WEF" type="vorbezuegeWef">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Verordnung über die Wohneigentumsförderung mit Mitteln der beruflichen Vorsorge (WEFV):
+
+            Art. 11a: Die Vorsorgeeinrichtung muss den Zeitpunkt des Vorbezugs und die Höhe der bis zu diesem
+            Zeitpunkt erworbenen Freizügigkeitsleistung festhalten. (Seit 01.01.2017)
+
+            Art. 12: Mitteilungspflicht der bisherigen Vorsorgeeinrichtung
+            Die bisherige Vorsorgeeinrichtung muss der neuen Vorsorgeeinrichtung unaufgefordert mitteilen, in welchem
+            Umfang die Freizügigkeits- oder die Vorsorgeleistung verpfändet ist oder Mittel vorbezogen wurden.
+
+            Sie muss der neuen Vorsorgeeinrichtung zudem den Zeitpunkt des Vorbezugs und die Höhe der bis zu diesem
+            Zeitpunkt erworbenen Freizügigkeitsleistung mitteilen.
+
+            *******************************************************************
+
+            Bestehen keine Vorbezüge, ist 'KEINE' anzugeben.
+
+            Beim Übertragungsgrund 'FZL_AUS_SCHEIDUNG' ist 'NA' anzugeben.
+
+            Ansonsten ist 'NA' nicht zulässig.
+
+            Liegt keine Information vor, ist 'UNBEKANNT' anzugeben.
+
+            Vorbezüge müssen einzeln angegeben werden und dürfen nicht summiert werden. Sollte dies aus technischen
+            Gründen nicht möglich sein, MUSS 'DATUM' auf 'DATUM_UNBEKANNT' und 'FZL_BEI_WEF' auf 'UNBEKANNT' gesetzt
+            sein. (Bei summierten Angaben können 'DATUM' und 'FZL_BEI_WEF' nicht korrekt angegeben werden.)
+
+            Rückzahlungen dürfen - müssen aber nicht - summiert als einzelner Wert angegeben werden. Bei summierten
+            Angaben MUSS 'DATUM' 'DATUM_UNBEKANNT' sein.
+
+            Die Summe der Rückzahlungen darf nicht grösser als die Summe der Vorbezüge sein.
+
+            Bitte Hinweise zum Attribut 'datenVollstaendig' beachten.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Ordonnance sur l'encouragement à la propriété du logement au moyen de la prévoyance professionnelle (OEPL):
+
+            Art. 11a: L'institution de prévoyance consigne le montant de la prestation de libre passage au moment du
+            versement anticipé et la date de ce versement. (Depuis le 01.01.2017)
+
+            Art. 12: Obligation de renseigner incombant à l'ancienne institution de prévoyance
+            L'ancienne institution de prévoyance avise spontanément la nouvelle institution de prévoyance du montant
+            sur lequel porte la mise en gage de la prestation de libre passage ou de la prestation de prévoyance, ou du
+            montant du versement anticipé.
+
+            Elle communique en outre à la nouvelle institution de prévoyance le montant de la prestation de libre
+            passage au moment du versement anticipé, et la date de ce versement.
+            *******************************************************************
+
+            En l'absence de versements anticipés, indiquer 'KEINE'.
+
+            Si le motif de transmission est 'FZL_AUS_SCHEIDUNG', il faut indiquer 'NA'.
+
+            Sinon, 'NA' n'est pas admis.
+
+            En l'absence d'information, indiquer 'UNBEKANNT'.
+
+            Les versements anticipés doivent être saisis séparément et ne doivent pas être additionnés. Si cela n'est
+            pas possible pour des raisons techniques, 'DATUM' DOIT être défini par 'DATUM_UNBEKANNT' et 'FZL_BEI_WEF'
+            par 'UNBEKANNT'. (Pour les données additionnées, 'DATUM' et 'FZL_BEI_WEF' ne peuvent être saisis
+            correctement.)
+
+            Les remboursements peuvent, mais ne doivent pas nécessairement être saisis sous la forme d'une seule valeur
+            additionnée. Pour les données additionnées, 'DATUM' DOIT être 'DATUM_UNBEKANNT'.
+
+            La somme des remboursements ne doit pas excéder la somme des versements anticipés.
+
+            Veuillez observer les remarques concernant l'attribut 'datenVollstaendig'.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Ordinanza sulla promozione della proprietà d’abitazioni mediante i fondi della previdenza professionale
+            (OPPA).
+
+            Art. 11a: L’istituto di previdenza determina il momento del prelievo anticipato e l’importo della
+            prestazione di libero passaggio acquisita fino a quel momento. (Dal 1.1.2017)
+
+            Art. 12: obbligo di comunicazione del precedente istituto di previdenza
+            Il precedente istituto di previdenza comunica spontaneamente al nuovo istituto in quale misura la
+            prestazione di libero passaggio o di previdenza è gravata da pegno o sono stati effettuati prelievi
+            anticipati.
+
+            Comunica inoltre al nuovo istituto di previdenza il momento del prelievo anticipato e l’importo della
+            prestazione di libero passaggio acquisita fino a quel momento.
+
+            *******************************************************************
+
+            Se non si sono verificati prelievi anticipati indicare 'KEINE'.
+
+            Se il motivo di trasferimento è 'FZL_AUS_SCHEIDUNG' inserire 'NA'.
+
+            Negli altri casi ‘NA’ non è consentito.
+
+            In assenza di informazioni, occorre indicare 'UNBEKANNT'.
+
+            I prelievi anticipati devono essere inseriti singolarmente e non possono essere sommati. Se, per motivi
+            tecnici, ciò non fosse possibile, 'DATUM' DEVE essere impostata su 'DATUM_UNBEKANNT' e 'FZL_BEI_WEF' su
+            'UNBEKANNT' (in caso di informazioni cumulate non è possibile indicare correttamente 'DATUM' e
+            'FZL_BEI_WEF'.
+
+            I rimborsi possono, anche se non è obbligatorio, essere sommati e inseriti come valore unico. In caso di
+            informazioni cumulate, ‘DATUM’ DEVE essere 'DATUM_UNBEKANNT'.
+
+            La somma dei rimborsi non deve superare l’importo dei prelievi anticipati.
+
+            Osservare le indicazioni sull’attributo 'datenVollstaendig'.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <!-- SCHEMA CHANGE 1.3
+           Added explicit documentation.
+           Changed use of NA. Now newly restricted to UEBERTRAGUNGSGRUND FZL_AUS_SCHEIDUNG. -->
+      <!-- SCHEMA CHANGE 1.4
+           Added attribute datenVollstaendig.
+           Documented use of DATUM_UNBEKANNT with summed values. -->
+      <xs:element name="EINKAEUFE" type="einkaeufe">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Bestehen keine Einkäufe, ist 'KEINE' anzugeben.
+
+            Beim Übertragungsgrund 'FZL_AUS_SCHEIDUNG' ist 'NA' anzugeben.
+
+            Ansonsten ist 'NA' nicht zulässig.
+
+            Liegt keine Information vor, ist 'UNBEKANNT' anzugeben.
+
+            Einkäufe müssen einzeln angegeben werden und dürfen nicht summiert werden. Sollte dies aus technischen
+            Gründen nicht möglich sein, MUSS 'DATUM' auf 'DATUM_UNBEKANNT' gesetzt sein. (Bei summierten Angaben kann
+            'DATUM' nicht korrekt angegeben werden.)
+
+            Bitte Hinweise zum Attribut 'datenVollstaendig' beachten.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            En l'absence de rachats, indiquer 'KEINE'.
+
+            Si le motif de transmission est 'FZL_AUS_SCHEIDUNG', il faut indiquer 'NA'.
+
+            Sinon, 'NA' n'est pas admis.
+
+            En l'absence d'information, il faut indiquer 'UNBEKANNT'.
+
+            Les rachats doivent être indiqués séparément et ne doivent pas être additionnés. Si cela n'est pas possible
+            pour des raisons techniques, 'DATUM' DOIT être défini par 'DATUM_UNBEKANNT'. (Pour les données additionnées,
+            'DATUM' ne peut être saisie correctement.)
+
+            Veuillez observer les remarques concernant l'attribut 'datenVollstaendig'.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Se non si sono verificati acquisti inserire 'KEINE'.
+
+            Se il motivo di trasferimento è 'FZL_AUS_SCHEIDUNG' inserire 'NA'.
+
+            Negli altri casi ‘NA’ non è consentito.
+
+            In assenza di informazioni, occorre indicare 'UNBEKANNT'.
+
+            Gli acquisti devono essere inseriti singolarmente e non possono essere sommati. Se, per motivi tecnici,
+            ciò non fosse possibile, l’elemento 'DATUM' DEVE essere impostato su 'DATUM_UNBEKANNT'. (in caso di
+            informazioni cumulate non è possibile inserire correttamente 'DATUM').
+
+            Osservare le indicazioni sull’attributo 'datenVollstaendig'.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <!-- SCHEMA CHANGE 1.3
+           Added explicit documentation.
+           Changed use of NA. Now newly restricted to UEBERTRAGUNGSGRUND FZL_AUS_SCHEIDUNG. -->
+      <!-- SCHEMA CHANGE 1.4 Added attribute datenVollstaendig. -->
+      <xs:element name="VERPFAENDUNGEN" type="verpfaendungen">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Bestehen keine Verpfändungen, ist 'KEINE' anzugeben.
+
+            Beim Übertragungsgrund 'FZL_AUS_SCHEIDUNG' ist 'NA' anzugeben.
+
+            Ansonsten ist 'NA' nicht zulässig.
+
+            Liegt keine Information vor, ist 'UNBEKANNT' anzugeben.
+
+            Es können mehrere Elemente 'VERPFAENDUNG' oder eine 'SUKZESSIV_VERPFAENDUNG' angegeben werden.
+
+            Bitte Hinweise zum Attribut 'datenVollstaendig' beachten.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            En l'absence de mise en gage, indiquer 'KEINE'.
+
+            Si le motif de transmission est 'FZL_AUS_SCHEIDUNG', il faut indiquer 'NA'.
+
+            Sinon, 'NA' n'est pas admis.
+
+            En l'absence d'information, il faut indiquer 'UNBEKANNT'.
+
+            Plusieurs éléments 'VERPFAENDUNG' ou une 'SUKZESSIV_VERPFAENDUNG' peuvent être indiqués.
+
+            Veuillez observer les remarques concernant l'attribut 'datenVollstaendig'.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Se non si sono verificate costituzioni in pegno inserire 'KEINE'.
+
+            Se il motivo di trasferimento è 'FZL_AUS_SCHEIDUNG' inserire 'NA'.
+
+            Negli altri casi ‘NA’ non è consentito.
+
+            In assenza di informazioni, occorre indicare 'UNBEKANNT'.
+
+            È possibile inserire più elementi 'VERPFAENDUNG' oppure una 'SUKZESSIV_VERPFAENDUNG'.
+
+            Osservare le indicazioni sull’attributo 'datenVollstaendig'.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="REFERENZ_ABSENDER" type="referenz">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Die Referenz auf Konto, Police, Arbeitgeber, Anschlussnummer bei der abgebenden Vorsorgeeinrichtung. Hier
+            ist die Angabe einer Referenz zwingend erforderlich.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            La référence au compte, à la police, à l'employeur, au numéro d'affiliation auprès de l'institution de
+            prévoyance émettante. Ici l'indication d'une référence est impérativement requise.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Il riferimento sul conto, polizza, datore di lavoro, numero di adesione presso l'istituzione di previdenza
+            trasferente. Qui l'indicazione di un riferimento è obbligatoria.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="REFERENZ_EMPFAENGER" type="referenzUnbekannt">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Die Referenz auf Konto, Police, Arbeitgeber, Anschlussnummer bei der empfangenden Vorsorgeeinrichtung.
+            Dieser Type erlaubt auch die Angabe 'UNBEKANNT'.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            La référence au compte, à la police, à l'employeur, au numéro d'affiliation auprès de l'institution de
+            prévoyance réceptrice. Ce type permet aussi l'indication de 'UNBEKANNT'
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Il riferimento sul conto, polizza, datore di lavoro, numero di adesione presso l'istituzione di previdenza
+            ricevente. Questo tipo consente anche l'indicazione 'UNBEKANNT'.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="uebertragungsgrund">
+    <xs:choice>
+      <!-- SCHEMA CHANGE 1.4 Change AUSTRITT to type 'date'. -->
+      <xs:element name="AUSTRITT" type="date">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Austrittsdatum.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Date de sortie.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Data di uscita.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <!-- SCHEMA CHANGE 1.4 Change INVALIDITAET to type 'date'. -->
+      <xs:element name="INVALIDITAET" type="date">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Invalidität.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Invalidité.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Invalidità.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <!-- SCHEMA CHANGE 1.4 Change TOD to type 'date'. -->
+      <xs:element name="TOD" type="date">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Tod.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Décès.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Morte.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <!-- SCHEMA CHANGE 1.4 Change FREIE_STIFTUNGSMITTEL to type 'date'. -->
+      <xs:element name="FREIE_STIFTUNGSMITTEL" type="date">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Freie Stiftungsmittel.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Fondslibres de la fondation.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Fondi liberi della fondazione.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FZL_AUS_SCHEIDUNG" type="fzlAusScheidung">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Vorbezug Scheidung.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Retrait anticipé Divorce.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Prelievo anticipato Divorzio.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <!-- SCHEMA CHANGE 1.4 Change SONDERMASSNAHME to type 'date'. -->
+      <xs:element name="SONDERMASSNAHME" type="date">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Sondermassnahmen
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Mesures spéciales
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Provvedimenti straordinari
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3 Changed PERSON => EX_PARTNER. -->
+  <xs:complexType name="fzlAusScheidung">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        'fzlAusScheidung' ist ein Übertragungsgrund, bei dem im Falle einer Scheidung eine Übertragung von einem Partner
+        zum anderen erfolgt.
+
+        'DATUM' gibt das Datum der Übertragung an.
+
+        'EX_PARTNER' beschreibt die Person, die im Scheidungsfalle zur Zahlung verpflichtet ist.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        'fzlAusScheidung' est un motif de transmission par lequel, en cas de divorce, un transfert a lieu d'un
+        partenaire à l'autre.
+
+        'DATUM' indique la date du transfert.
+
+        'EX_PARTNER' décrit la personne qui est tenue au paiement en cas de divorce.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        'fzlAusScheidung' è un motivo di trasferimento per cui, nel caso di divorzio, avviene un trasferimento da un
+        partner a un altro.
+
+        'DATUM' indica la data del trasferimento.
+
+        'EX_PARTNER' descrive la persona che in caso di divorzio è tenuta al pagamento.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <!-- SCHEMA CHANGE 1.4 Change DATUM to type 'date'. -->
+      <xs:element name="DATUM" type="date"/>
+      <xs:element name="EX_PARTNER" type="exPartner"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="betragUnbekannt">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Stellt einen Betrag dar.
+
+        Alternativ kann 'UNBEKANNT' angegeben werden.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Représente un montant.
+
+        A titre alternatif, on peut indiquer 'UNBEKANNT'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Rappresenta un importo.
+
+        In alternativa si può indicare 'UNBEKANNT'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:element name="UNBEKANNT" type="leer"/>
+      <xs:element name="BETRAG" type="betrag"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="betragUnbekanntNA">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Stellt einen Betrag dar.
+
+        Alternativ kann 'UNBEKANNT' oder 'NA' angegeben werden.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Représente un montant.
+
+        A titre alternatif, on peut indiquer 'UNBEKANNT' ou 'NA'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Rappresenta un importo.
+
+        In alternativa si può indicare 'UNBEKANNT' oppure 'NA'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:element name="UNBEKANNT" type="leer"/>
+      <xs:element name="NA" type="leer"/>
+      <xs:element name="BETRAG" type="betrag"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3
+       Renamed betragDatumUnbekannt => betragDatumUnbekanntNA.
+       Added NA.
+       Changed DATUM => DATUM/DATUM_UNBEKANNT. -->
+  <xs:complexType name="betragDatumUnbekanntNA">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Kombiniert einen Betrag mit einem Datum. Beide müssen angegeben werden.
+
+        Alternativ kann 'UNBEKANNT' oder 'NA' angegeben werden.
+
+        Das Datum kann 'DATUM_UNBEKANNT' sein.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Associe un montant à une date. Les deux doivent être indiqués.
+
+        A titre alternatif, on peut indiquer 'UNBEKANNT'.
+
+        La date peut-être 'DATUM_UNBEKANNT'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Associa un importo con una data. Vanno indicati entrambi.
+
+        In alternativa si può indicare 'UNBEKANNT'.
+
+        La data può essere 'DATUM_UNBEKANNT'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:element name="UNBEKANNT" type="leer"/>
+      <xs:element name="NA" type="leer"/>
+      <xs:sequence>
+        <xs:element name="BETRAG" type="betrag"/>
+        <xs:choice>
+          <xs:element name="DATUM_UNBEKANNT" type="leer"/>
+          <!-- SCHEMA CHANGE 1.4 Change DATUM to type 'date'. -->
+          <xs:element name="DATUM" type="date"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3 Removed betragDatumUnbekanntKeine. -->
+
+  <!-- SCHEMA CHANGE 1.3 Changed DATUM => DATUM/DATUM_UNBEKANNT. -->
+  <xs:complexType name="betragDatumZins">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Kombiniert einen Betrag mit einem Datum und einem Zins. Alle drei Werte müssen angegeben werden.
+
+        Datum kann 'DATUM_UNBEKANNT' sein.
+
+        Der Zins kann 'UNBEKANNT' sein.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Associe un montant avec une date et un intérêt. Les trois valeurs doivent être indiquées.
+
+        La date peut-être 'DATUM_UNBEKANNT'.
+
+        L'intérêt peut être 'UNBEKANNT'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Associa un importo con una data e un interesse. Tutti i tre valori vanno indicati.
+
+        La data può essere 'DATUM_UNBEKANNT'
+
+        L’interesse può essere 'UNBEKANNT'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="BETRAG" type="betrag"/>
+      <xs:choice>
+        <xs:element name="DATUM_UNBEKANNT" type="leer"/>
+        <!-- SCHEMA CHANGE 1.4 Change DATUM to type 'date'. -->
+        <xs:element name="DATUM" type="date"/>
+      </xs:choice>
+      <xs:element name="ZINS" type="betragUnbekannt"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.4 Added betragBvgUnbekannt. -->
+  <xs:complexType name="betragBvgUnbekannt">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Kombiniert einen Betrag mit einem Betrag BVG.
+
+        Betrag BVG kann 'UNBEKANNT' sein. Betrag BVG darf nicht grösser als Betrag sein.
+
+        Alternativ kann 'UNBEKANNT' angegeben werden.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Associe un montant avec un montant LPP.
+
+        Le montant LPP peut être 'UNBEKANNT'. Le montant LPP ne doit pas être supérieur au montant.
+
+        Il est sinon possible de saisir 'UNBEKANNT'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Associa un importo a un importo LPP.
+
+        L’importo LPP può essere 'UNBEKANNT'. L’importo LPP non può essere superiore all’importo.
+
+        In alternativa è possibile inserire 'UNBEKANNT'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:element name="UNBEKANNT" type="leer"/>
+      <xs:sequence>
+        <xs:element name="BETRAG" type="betrag"/>
+        <xs:element name="BETRAG_BVG" type="betragUnbekannt"/>
+      </xs:sequence>
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3 Changed DATUM => DATUM/DATUM_UNBEKANNT. -->
+  <!-- SCHEMA CHANGE 1.4 Added explicit documentation of BETRAG_BVG <= BETRAG. -->
+  <xs:complexType name="betragBvgDatum">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Kombiniert ein Betrag und einen Betrag BVG mit einem Datum. Alle drei müssen angegeben werden.
+
+        Datum kann 'DATUM_UNBEKANNT' sein.
+
+        Betrag BVG kann 'UNBEKANNT' sein. Betrag BVG darf nicht grösser als Betrag sein.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Associe un montant et un montant LPP avec une date. Les trois valeurs doivent être indiquées.
+
+        La date peut être 'DATUM_UNBEKANNT'.
+
+        Le montant LPP peut être 'UNBEKANNT'. Le montant LPP ne doit pas être supérieur au montant.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Associa un importo a un importo LPP con una data. Tutti e tre i valori vanno indicati.
+
+        La data può essere 'DATUM_UNBEKANNT'.
+
+        L’importo LPP può essere 'UNBEKANNT'. L’importo LPP non può essere superiore all’importo.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="BETRAG" type="betrag"/>
+      <xs:element name="BETRAG_BVG" type="betragUnbekannt"/>
+      <xs:choice>
+        <xs:element name="DATUM_UNBEKANNT" type="leer"/>
+        <!-- SCHEMA CHANGE 1.4 Change DATUM to type 'date'. -->
+        <xs:element name="DATUM" type="date"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3 Changed DATUM => DATUM/DATUM_UNBEKANNT. -->
+  <!-- SCHEMA CHANGE 1.4
+       Renamed betragBvgDatumUnbekanntKeineNA => betragBvgDatumUnbekanntNA.
+       Removed KEINE.
+       Added explicit documentation of BETRAG_BVG <= BETRAG. -->
+  <xs:complexType name="betragBvgDatumUnbekanntNA">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Kombiniert einen Betrag und einen Betrag BVG mit einem Datum. Alle drei müssen angegeben werden.
+
+        Datum kann 'DATUM_UNBEKANNT' sein.
+
+        Betrag BVG kann 'UNBEKANNT' sein. Betrag BVG darf nicht grösser als Betrag sein.
+
+        Alternativ können 'UNBEKANNT' oder 'NA' angegeben werden.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Associe un montant et un montant LPP avec une date. Les trois doivent être indiqués.
+
+        La date peut être 'DATUM_UNBEKANNT'.
+
+        Le montant LPP peut être 'UNBEKANNT'. Le montant LPP ne doit pas être supérieur au montant.
+
+        Il est sinon possible de saisir 'UNBEKANNT' ou 'NA'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Associa un importo a un importo LPP con una data. Tutti e tre i valori vanno indicati.
+
+        La data può essere 'DATUM_UNBEKANNT'.
+
+        L’importo LPP può essere 'UNBEKANNT'. L’importo LPP non può essere superiore all’importo.
+
+        In alternativa è possibile inserire 'UNBEKANNT' o 'NA'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:element name="UNBEKANNT" type="leer"/>
+      <xs:element name="NA" type="leer"/>
+      <xs:sequence>
+        <xs:element name="BETRAG" type="betrag"/>
+        <xs:element name="BETRAG_BVG" type="betragUnbekannt"/>
+        <xs:choice>
+          <xs:element name="DATUM_UNBEKANNT" type="leer"/>
+          <!-- SCHEMA CHANGE 1.4 Change DATUM to type 'date'. -->
+          <xs:element name="DATUM" type="date"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3 Changed use of NA. Now only allowed for FZL_AUS_SCHEIDUNG. -->
+  <!-- SCHEMA CHANGE 1.4
+       Renamed vorbezuege => vorbezuegeScheidung.
+       Added attribute datenVollstaendig.
+       Moved documentation to SCHEIDUNG. -->
+  <xs:complexType name="vorbezuegeScheidung">
+    <xs:choice>
+      <xs:element name="UNBEKANNT" type="leer"/>
+      <xs:element name="KEINE" type="leer"/>
+      <xs:element name="NA" type="leer"/>
+      <xs:sequence>
+        <xs:element name="VORBEZUG" type="betragBvgDatum" maxOccurs="unbounded"/>
+        <xs:element name="RUECKZAHLUNG" type="betragBvgDatum" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:choice>
+    <xs:attribute name="datenVollstaendig" type="datenVollstaendig" use="required"/>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3 Changed use of NA. Now only allowed for FZL_AUS_SCHEIDUNG. -->
+  <!-- SCHEMA CHANGE 1.4
+       Added copy of old vorbezuege (now vorbezuegeScheidung) as vorbezuegeWef.
+       Changed type of VORBEZUG from betragBvgDatum => vorbezugWef. (Allows for FZL_BEI_WEF.)
+       Added attribute datenVollstaendig.
+       Moved documentation to WEF. -->
+  <xs:complexType name="vorbezuegeWef">
+    <xs:choice>
+      <xs:element name="UNBEKANNT" type="leer"/>
+      <xs:element name="KEINE" type="leer"/>
+      <xs:element name="NA" type="leer"/>
+      <xs:sequence>
+        <xs:element name="VORBEZUG" type="vorbezugWef" maxOccurs="unbounded"/>
+        <xs:element name="RUECKZAHLUNG" type="betragBvgDatum" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:choice>
+    <xs:attribute name="datenVollstaendig" type="datenVollstaendig" use="required"/>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3 Changed DATUM => DATUM/DATUM_UNBEKANNT. -->
+  <!-- SCHEMA CHANGE 1.4
+       Added copy of betragBvgDatum as vorbezugWef.
+       Added FZL_BEI_WEF.
+       Documented use of DATUM_UNBEKANNT with summed values. -->
+  <xs:complexType name="vorbezugWef">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Kombiniert ein Betrag und einen Betrag BVG mit einem Datum. Alle drei müssen angegeben werden.
+
+        'DATUM' kann 'DATUM_UNBEKANNT' sein. Bei 'DATUM_UNBEKANNT' muss 'FZL_BEI_WEF' 'UNBEKANNT' sein.
+
+        'BETRAG_BVG' kann 'UNBEKANNT' sein.
+
+        'FZL_BEI_WEF' gibt den FZL Saldo zum Zeitpunkt des Vorbezugs an. 'FZL_BEI_WEF' kann 'UNBEKANNT' sein.
+
+        Vorbezüge müssen einzeln angegeben werden und dürfen nicht summiert werden. Sollte dies aus technischen
+        Gründen nicht möglich sein, MUSS 'DATUM' auf 'DATUM_UNBEKANNT' und 'FZL_BEI_WEF' auf 'UNBEKANNT' gesetzt
+        sein. (Bei summierten Angaben können 'DATUM' und 'FZL_BEI_WEF' nicht korrekt angegeben werden.)
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Associe un montant et un montant LPP avec une date. Les trois doivent être indiqués.
+
+        La date peut être 'DATUM_UNBEKANNT'. En cas de 'DATUM_UNBEKANNT', 'FZL_BEI_WEF' doit être 'UNBEKANNT'.
+
+        'BETRAG_BVG' peut être 'UNBEKANNT'.
+
+        'FZL_BEI_WEF' indique le solde PLP au moment du versement anticipé. 'FZL_BEI_WEF' peut être 'UNBEKANNT'.
+
+        Les versements anticipés doivent être saisis séparément et ne doivent pas être additionnés. Si cela n'est pas
+        possible pour des raisons techniques, 'DATUM' DOIT être défini par 'DATUM_UNBEKANNT' et 'FZL_BEI_WEF' par
+        'UNBEKANNT'. (Pour les données additionnées, 'DATUM' et 'FZL_BEI_WEF' ne peuvent être saisis correctement.)
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Associa un importo a un importo LPP con una data. Tutti e tre i valori vanno indicati.
+
+        'DATUM' può essere 'DATUM_UNBEKANNT'. Se 'DATUM_UNBEKANNT' 'FZL_BEI_WEF' deve essere 'UNBEKANNT'.
+
+        'BETRAG_BVG' può essere 'UNBEKANNT'.
+
+        'FZL_BEI_WEF' indica il saldo PLP al momento del prelievo anticipato. 'FZL_BEI_WEF' può essere 'UNBEKANNT'.
+
+        I prelievi anticipati devono essere inseriti singolarmente e non possono essere sommati. Se, per motivi tecnici,
+        ciò non fosse possibile, l’elemento 'DATUM' DEVE essere impostato su 'DATUM_UNBEKANNT' e 'FZL_BEI_WEF' su
+        'UNBEKANNT'. (in caso di informazioni cumulate non è possibile indicare correttamente 'DATUM' e 'FZL_BEI_WEF'.)
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="BETRAG" type="betrag"/>
+      <xs:element name="BETRAG_BVG" type="betragUnbekannt"/>
+      <xs:choice>
+        <xs:element name="DATUM_UNBEKANNT" type="leer"/>
+        <!-- SCHEMA CHANGE 1.4 Change DATUM to type 'date'. -->
+        <xs:element name="DATUM" type="date"/>
+      </xs:choice>
+      <xs:element name="FZL_BEI_WEF" type="betragBvgUnbekannt"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3 Changed use of NA. Now only allowed for FZL_AUS_SCHEIDUNG. -->
+  <!-- SCHEMA CHANGE 1.4
+       Added attribute datenVollstaendig.
+       Moved documentation to EINKAEUFE. -->
+  <xs:complexType name="einkaeufe">
+    <xs:choice>
+      <xs:element name="UNBEKANNT" type="leer"/>
+      <xs:element name="KEINE" type="leer"/>
+      <xs:element name="NA" type="leer"/>
+      <xs:element name="EINKAUF" type="betragDatumZins" maxOccurs="unbounded"/>
+    </xs:choice>
+    <xs:attribute name="datenVollstaendig" type="datenVollstaendig" use="required"/>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3 Changed use of NA. Now only allowed for FZL_AUS_SCHEIDUNG. -->
+  <!-- SCHEMA CHANGE 1.4
+       Moved documentation to VERPFAENDUNGEN.
+       Removed minOccurs="0" for VERPFAENDUNG. (This was a bug in the XSD.)
+       Added attribute datenVollstaendig. -->
+  <xs:complexType name="verpfaendungen">
+    <xs:choice>
+      <xs:element name="UNBEKANNT" type="leer"/>
+      <xs:element name="KEINE" type="leer"/>
+      <xs:element name="NA" type="leer"/>
+      <xs:element name="SUKZESSIV_VERPFAENDUNG" type="sukzessivVerpfaendung"/>
+      <xs:element name="VERPFAENDUNG" type="verpfaendung" maxOccurs="unbounded"/>
+    </xs:choice>
+    <xs:attribute name="datenVollstaendig" type="datenVollstaendig" use="required"/>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3 Changed DATUM => DATUM/DATUM_UNBEKANNT. -->
+  <xs:complexType name="verpfaendung">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Verpfändung. Enthält einen Pfandgläubiger, den Verpfändungsbetrag sowie das Datum der Verpfändung.
+
+        Das Datum einer Verpfändung kann 'DATUM_UNBEKANNT' sein.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Mise en gage. Contient un créancier-gagiste, le montant mis en gage ainsi que la date de la mise en gage.
+
+        La date de la mise en gage peut-être 'DATUM_UNBEKANNT'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Pegno. Contiene un creditore pignoratizio, l'importo del pegno e la data del pegno.
+
+        La data del pegno può essere 'DATUM_UNBEKANNT'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PFANDGLAEUBIGER" type="personOderFirmaLenient"/>
+      <xs:element name="BETRAG" type="betrag"/>
+      <xs:choice>
+        <xs:element name="DATUM_UNBEKANNT" type="leer"/>
+        <!-- SCHEMA CHANGE 1.4 Change DATUM to type 'date'. -->
+        <xs:element name="DATUM" type="date"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- SCHEMA CHANGE 1.3 Changed DATUM => DATUM/DATUM_UNBEKANNT. -->
+  <xs:complexType name="sukzessivVerpfaendung">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Sukzessivverpfändung.
+        Enthält einen Pfandgläubiger, sowie das Datum der Verpfändung.
+
+        Das Datum einer Verpfändung kann 'DATUM_UNBEKANNT' sein.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Mise en gage successive.
+        Contient un créancier-gagiste, ainsi que la date de la mise en gage.
+
+        La date de la mise en gage peut-être 'DATUM_UNBEKANNT'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Pegno successivo.
+        Contiene un creditore pignoratizio e la data del pegno.
+
+        La data del pegno può essere 'DATUM_UNBEKANNT'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PFANDGLAEUBIGER" type="personOderFirmaLenient"/>
+      <xs:choice>
+        <xs:element name="DATUM_UNBEKANNT" type="leer"/>
+        <!-- SCHEMA CHANGE 1.4 Change DATUM to type 'date'. -->
+        <xs:element name="DATUM" type="date"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="referenzUnbekannt">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Die Referenz auf Konto, Police, Arbeitgeber, Anschlussnummer bei der empfangenden Vorsorgeeinrichtung. Dieser
+        Type erlaubt auch die Angabe 'UNBEKANNT'.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        La référence au compte, à la police, à l'employeur, au numéro d'affiliation auprès de l'institution de
+        prévoyance réceptrice. Ce type permet aussi l'indication de 'UNBEKANNT'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Il riferimento sul conto, polizza, datore di lavoro, numero di adesione presso l'istituzione di previdenza
+        ricevente. Questo tipo consente anche l'indicazione 'UNBEKANNT'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:element name="UNBEKANNT" type="leer"/>
+      <xs:element name="REFERENZ" type="token255">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Allgemeine generische Referenz falls keine der anderen Elemente anwendbar sein sollte.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Référence générique si aucun des autres éléments n'était applicable.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Riferimento generico se nessuno degli altri elementi dovesse essere applicabile.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ANSCHLUSSNUMMER" type="token255"/>
+      <xs:element name="ARBEITGEBER" type="token255"/>
+      <xs:element name="KONTONUMMER" type="token255"/>
+      <xs:element name="POLICENNUMMER" type="token255"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="referenz">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Die Referenz auf Konto, Police, Arbeitgeber, Anschlussnummer bei der abgebenden Vorsorgeeinrichtung. Hier ist
+        die Angabe einer Referenz zwingend erforderlich.
+
+        Weitere Dokumentation siehe Type 'referenzUnbekannt'.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        La référence au compte, à la police, à l'employeur, au numéro d'affiliation auprès de l'institution de
+        prévoyance émettrice. Ici l'indication d'une référence est impérativement requise.
+
+        Autre documentation, voir type 'referenzUnbekannt'.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Il riferimento sul conto, polizza, datore di lavoro, numero di adesione presso l'istituzione di previdenza
+        trasferente. Qui è obbligatoria l'indicazione di un riferimento.
+
+        Ulteriore documentazione Vedi tipo 'referenzUnbekannt'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:element name="REFERENZ" type="token255"/>
+      <xs:element name="ANSCHLUSSNUMMER" type="token255"/>
+      <xs:element name="ARBEITGEBER" type="token255"/>
+      <xs:element name="KONTONUMMER" type="token255"/>
+      <xs:element name="POLICENNUMMER" type="token255"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="fzlMitZahlung">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        FZL Element mit Zahlungsinformation. Dieses Element wird bei Einzelzahlung verwendet.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Elément PLP avec information de paiement. Cet élément est utilisé en cas de paiement individuel.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Elemento PLP con informazione sul pagamento. Quest'elemento viene utilizzato per il pagamento singolo.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PERSON_AHV" type="personAHV"/>
+      <xs:element name="LEISTUNGS_DATEN" type="leistungsdaten"/>
+      <!-- SCHEMA CHANGE 1.3 ZAHLUNG now defined as max 5% above FZL. (This was always implemented, but not documented.)-->
+      <xs:element ref="z:ZAHLUNG">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Der Betrag der Zahlung muss mindestens so gross wie 'FREIZUEGIGKEITSLEISTUNG' sein, darf diese aber nicht
+            um mehr als 5% überschreiten.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Le montant du versement doit être au moins équivalent à la 'FREIZUEGIGKEITSLEISTUNG', mais il ne doit pas
+            dépasser le 5%.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            L’importo del pagamento deve avere almeno la stessa entità della relativa 'FREIZUEGIGKEITSLEISTUNG'.
+            Però non deve superare il 5%.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="fzlOhneZahlung">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        FZL Element ohne Zahlungsinformation. Dieses Element wird bei Sammelzahlung verwendet.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Elément PLP sans information de paiement. Cet élément est utilisé en cas de paiement collectif.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Elemento PLP senza informazione sul pagamento. Quest'elemento viene impiegato per il pagamento collettivo.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PERSON_AHV" type="personAHV"/>
+      <xs:element name="LEISTUNGS_DATEN" type="leistungsdaten"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="fzlMitEinzelzahlung">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        FZL Daten mit Einzelzahlung. Für jede FZL besteht genau eine Zahlung.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Données PLP avec paiement individuel. Pour chaque PLP, il existe exactement un paiement.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Dati PLP con pagamento singolo. Per ogni PLP esiste un solo pagamento.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="FZL" type="fzlMitZahlung" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="fzlMitSammelzahlung">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        FZL Daten mit Sammelzahlung. Pro Übertragung gibt es genau eine Zahlung für alle FZL.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Données PLP avec paiement collectif. Pour chaque transmission, il existe exactement un paiement pour toutes les
+        PLP.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Dati PLP con pagamento collettivo. Per ogni trasferimento esiste un solo pagamento per tutte le PLP.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="FZL" type="fzlOhneZahlung" maxOccurs="unbounded"/>
+      <!-- SCHEMA CHANGE 1.3
+           ZAHLUNG defined as exact match for Sammelzahlung.
+           (Not new. Was and is defined in FREIZUEGIGKEITSLEISTUNG.) -->
+      <xs:element ref="z:ZAHLUNG">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Der Betrag der Zahlung muss exakt mit der Summe aller 'FREIZUEGIGKEITSLEISTUNG' übereinstimmen.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Le montant du versement doit correspondre exactement à la somme de la 'FREIZUEGIGKEITSLEISTUNG'.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            L’importo del pagamento deve corrispondere esattamente alla somma della 'FREIZUEGIGKEITSLEISTUNG'.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ############ Technische Infos ############ -->
+  <xs:complexType name="value">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        XPATH bezieht sich auf den Root des Element. VALUE stellt das Element selber dar.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        XPATH se rapporte à la Root de l'élément. VALUE représente l'élément lui-même.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        XPATH fa riferimento al root dell'elemento. VALUE rappresenta l'elemento stesso.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="XPATH" type="token255"/>
+      <xs:element name="VALUE">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:any namespace="##any" processContents="skip"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="change">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        CHANGE beschreibt eine migrationsbedingte Datenänderung.
+        FROM beschreibt einen Rootknoten sowie ein Element im Ausgangsschema.
+        TO beschreibt einen Rootknoten sowie ein Element im Zielschema.
+        Sollte ein Inhalt im Ausgangs- oder Zielschema nicht anwendbar sein, entfällt das FROM bzw. TO Element.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        CHANGE décrit une modification de données dues à une migration.
+        FROM décrit un noeud de Root ainsi qu'un élément dans le schéma initial.
+        TO décrit un noeud de Root ainsi qu'un élément dans le schéma cible.
+        Si un contenu dans le schéma initial ou cible n'était pas applicable, l'élément FROM ou TO est supprimé.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        CHANGE descrive una modifica dei dati causata da migrazione.
+        FROM descrive un nodo del root e un elemento nello schema di partenza.
+        TO descrive un nodo del root e un elemento nello schema di arrivo.
+        Se non dovesse essere applicabile un contenuto nello schema di partenza o di arrivo, viene a cadere l'elemento
+        FROM rispettivo TO.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:choice>
+        <xs:sequence>
+          <xs:element name="FROM" type="value"/>
+          <xs:element name="TO" type="value" minOccurs="0"/>
+        </xs:sequence>
+        <xs:sequence>
+          <xs:element name="TO" type="value"/>
+        </xs:sequence>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="migrationData">
+    <xs:sequence>
+      <xs:element name="OLD_VERSION_NS" type="token255"/>
+      <xs:element name="NEW_VERSION_NS" type="token255"/>
+      <xs:element name="CHANGE" type="change" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ############ Groups ############ -->
+
+  <xs:group name="STRASSE_UND_ODER_POSTFACH">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        Strasse und/oder Postfach müssen angegeben werden.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Rue et/ou case postale doivent être indiquées.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Via e/o casella postale vanno indicate.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:sequence>
+        <xs:element name="STRASSE" type="token255"/>
+        <xs:element name="POSTFACH" type="token255" minOccurs="0"/>
+      </xs:sequence>
+      <xs:sequence>
+        <xs:element name="POSTFACH" type="token255"/>
+      </xs:sequence>
+    </xs:choice>
+  </xs:group>
+
+  <xs:group name="SOZV_NUMMERN">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        AHV Nummer und/oder der Sozialversicherungsnummer müssen angegeben werden.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        Numéro AVS et/ou le numéro d'assurance sociale doivent être indiqués.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Numero AVS e/o numero dell'assicurazione sociale devono essere indicati.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:sequence>
+        <xs:element name="AHV_NUMMER" type="ahvNummer"/>
+        <xs:element name="SOZV_NUMMER" type="sozvNummer" minOccurs="0"/>
+      </xs:sequence>
+      <xs:sequence>
+        <xs:element name="SOZV_NUMMER" type="sozvNummer"/>
+      </xs:sequence>
+    </xs:choice>
+  </xs:group>
+
+  <!-- ############ Elemente ############ -->
+
+  <xs:element name="UEBERTRAGUNG" type="uebertragung">
+    <xs:annotation>
+      <xs:documentation xml:lang="de">
+        XML-Root Element einer FZL Übertragung.
+      </xs:documentation>
+      <xs:documentation xml:lang="fr">
+        XML-Root Element d'une transmission de PLP.
+      </xs:documentation>
+      <xs:documentation xml:lang="it">
+        Elemento root XML di un trasferimento di PLP.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="uebertragung">
+    <xs:sequence>
+      <!-- SCHEMA CHANGE 1.4 Change DATUM to type 'date'. -->
+      <xs:element name="DATUM" type="date">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Datum der Übertragung.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Date de la transmission.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Data del trasferimento.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="IDENT" type="token255">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            IDENT ist eine beliebige, vom Absender zu definierende Unique ID, die diese Datei eindeutig identifiziert.
+            IDENT muss für einen Absender eindeutig sein ohne Berücksichtigung des Datums.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            IDENT est une ID unique libre, à définir par l'expéditeur, qui identifie de manière univoque ce fichier.
+            IDENT doit être univoque pour un expéditeur sans tenir compte de la date.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            IDENT è un ID unico, definito a piacimento dal mittente, che identifica questo file unicamente.
+            IDENT deve essere chiaro per un mittente senza considerare la data.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="BVG_KONFORM" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Drückt aus, dass alle nach BVG vorgeschriebenen Angaben in diesem Dokument enthalten sind.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Exprime que toutes les indications prescrites selon la LPP sont contenues dans ce document.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Chiarisce che tutte le indicazioni prescritte dalla LPP sono contenute in questo documento.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ABSENDER" type="firma">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Absendende Vorsorgeeinrichtung.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Institution de prévoyance expéditrice.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Istituzione di previdenza trasferente.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EMPFAENGER" type="firma">
+        <xs:annotation>
+          <xs:documentation xml:lang="de">
+            Empfangende Vorsorgeeinrichtung.
+          </xs:documentation>
+          <xs:documentation xml:lang="fr">
+            Institution de prévoyance réceptrice.
+          </xs:documentation>
+          <xs:documentation xml:lang="it">
+            Istituzione di previdenza ricevente.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:choice>
+        <xs:element name="FZL_MIT_EINZELZAHLUNG" type="fzlMitEinzelzahlung"/>
+        <xs:element name="FZL_MIT_SAMMELZAHLUNG" type="fzlMitSammelzahlung"/>
+      </xs:choice>
+      <xs:element name="MIGRATION_DATA" type="migrationData" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+
+</xs:schema>
