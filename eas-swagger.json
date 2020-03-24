@@ -34,8 +34,7 @@
               }
             }
           }
-        },
-        "description": "Check API availability."
+        }
       }
     },
     "/commencements": {
@@ -54,7 +53,6 @@
             }
           }
         },
-        "description": "Post new commencements (Eintritte).",
         "responses": {
           "201": {
             "description": "Created"
@@ -82,8 +80,7 @@
           "201": {
             "description": "Created"
           }
-        },
-        "description": "Post new terminations (Austritte)."
+        }
       }
     },
     "/matches": {
@@ -105,7 +102,6 @@
             }
           }
         },
-        "description": "\"Get my matches\" from pension fund (VE) point of view. Could be used by a pension fund as a pull batch service. Pension fund will be identified by OAuth token based on uid of the company.",
         "parameters": [
           {
             "schema": {
@@ -146,8 +142,7 @@
           "404": {
             "description": "Not Found"
           }
-        },
-        "description": "Get a match by match id"
+        }
       },
       "parameters": [
         {
@@ -170,7 +165,6 @@
             "description": "Not Found"
           }
         },
-        "description": "Patch match status (OPEN, ACCEPTED_BY_RECEIVER, REJECTED_BY_RECEIVER, REJECTED_BY_SENDER, CLOSED_BY_SENDER)",
         "requestBody": {
           "content": {
             "application/json": {
@@ -209,7 +203,6 @@
           }
         },
         "operationId": "get-transfers",
-        "description": "\"Get my transfers\" from pension fund (VE) point of view. Could be used by a pension fund as a pull batch service. Pension fund will be identified by OAuth token based on uid of the company.",
         "parameters": [
           {
             "schema": {
@@ -279,8 +272,7 @@
             }
           }
         },
-        "operationId": "get-transfers-transfer-id",
-        "description": "Get a transfer by transfer id."
+        "operationId": "get-transfers-transfer-id"
       },
       "parameters": [
         {
@@ -706,12 +698,6 @@
         "required": [
           "divorce-id"
         ]
-      }
-    },
-    "securitySchemes": {
-      "mTLS": {
-        "type": "http",
-        "scheme": "mutual"
       }
     }
   }
