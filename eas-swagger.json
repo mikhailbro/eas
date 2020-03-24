@@ -12,352 +12,85 @@
   ],
   "paths": {
     "/ping": {
-        "get": {
-          "operationId": "ping",
-          "responses": {
-            "200": {
-              "description": "default response",
-              "content": {
-                "text/plain": {
-                  "schema": {
-                    "type": "string"
-                  }
+      "get": {
+        "operationId": "ping",
+        "responses": {
+          "200": {
+            "description": "default response",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
                 },
-                "application/json": {
-                  "schema": {
-                    "type": "string"
-                  },
-                  "examples": {
-                    "example-1": {}
-                  }
+                "examples": {
+                  "example-1": {}
                 }
               }
             }
-          },
-          "description": "Check API availability"
-        }
+          }
+        },
+        "description": "Check API availability"
+      }
     },
     "/commencements": {
-        "post": {
-          "operationId": "create-commencements",
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Commencement"
-                  }
-                }
-              }
-            }
-          },
-          "description": "Create commencements (Eintritte)",
-          "responses": {
-            "201": {
-              "description": "Created"
-            }
-          }
-        },
-        "put": {
-          "summary": "",
-          "operationId": "put-commencements",
-          "responses": {
-            "200": {
-              "description": "OK"
-            }
-          },
-          "description": "Full update of a commencements array (Eintritte)",
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Commencement"
-                  }
+      "post": {
+        "operationId": "create-commencements",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Commencement"
                 }
               }
             }
           }
         },
-        "patch": {
-          "summary": "",
-          "operationId": "patch-commencements",
-          "responses": {
-            "200": {
-              "description": "OK"
-            }
-          },
-          "description": "Partial update of a commencements array (Eintritte)",
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Commencement"
-                  }
-                }
-              }
-            }
+        "description": "Post new commencements (Eintritte)",
+        "responses": {
+          "201": {
+            "description": "Created"
           }
         }
+      }
     },
     "/terminations": {
-        "post": {
-          "operationId": "create-terminations",
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Termination"
-                  }
-                }
-              }
-            }
-          },
-          "responses": {
-            "201": {
-              "description": "default response",
-              "content": {
-                "application/json": {}
-              }
-            }
-          },
-          "description": "Create terminations (Austritte)"
-        },
-        "put": {
-          "summary": "",
-          "operationId": "put-terminations",
-          "responses": {
-            "200": {
-              "description": "OK"
-            }
-          },
-          "description": "Full update of terminations (Austritte)",
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Termination"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "patch": {
-          "summary": "",
-          "operationId": "patch-terminations",
-          "responses": {
-            "200": {
-              "description": "OK"
-            }
-          },
-          "description": "Partial update of terminations (Austritte)",
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Termination"
-                  }
-                }
-              }
-            }
-          }
-        }
-    },
-    "/terminations/{termination-id}": {
-        "put": {
-          "summary": "",
-          "operationId": "put--terminations-termination-id",
-          "responses": {
-            "200": {
-              "description": "OK"
-            }
-          },
-          "description": "Full update of a termination (Austritt)",
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
+      "post": {
+        "operationId": "create-terminations",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
                   "$ref": "#/components/schemas/Termination"
                 }
               }
             }
           }
         },
-        "patch": {
-          "summary": "",
-          "operationId": "patch--terminations-termination-id",
-          "responses": {
-            "200": {
-              "description": "OK"
-            }
-          },
-          "description": "Partial update of a termination (Austritt)",
-          "requestBody": {
+        "responses": {
+          "201": {
+            "description": "default response",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Termination"
-                }
-              }
+              "application/json": {}
             }
           }
         },
-        "delete": {
-          "summary": "",
-          "operationId": "delete--terminations-termination-id",
-          "responses": {
-            "204": {
-              "description": "No Content"
-            }
-          },
-          "description": "Delete a termination (Austritt)"
-        },
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "name": "termination-id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "get": {
-          "summary": "",
-          "operationId": "get-terminations-termination-id",
-          "responses": {
-            "200": {
-              "description": "OK"
-            },
-            "404": {
-              "description": "Not Found",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/Termination"
-                  }
-                }
-              }
-            }
-          },
-          "description": "Read a termination (Austritt) by termination-id"
-        }
-    },
-    "/commencements/{commencement-id}": {
-        "put": {
-          "summary": "",
-          "operationId": "put-commencements-commencement-id",
-          "responses": {
-            "200": {
-              "description": "OK"
-            }
-          },
-          "description": "Full update of a commencement (Eintritt)",
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Commencement"
-                }
-              }
-            }
-          }
-        },
-        "delete": {
-          "summary": "",
-          "operationId": "delete-commencements-commencement-id",
-          "description": "Delete a commencement (Eintritt)",
-          "responses": {
-            "204": {
-              "description": "No Content"
-            }
-          }
-        },
-        "patch": {
-          "summary": "",
-          "operationId": "patch-commencements-commencement-id",
-          "responses": {
-            "200": {
-              "description": "OK"
-            }
-          },
-          "description": "Partial update of a commencement (Eintritt)",
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Commencement"
-                }
-              }
-            }
-          }
-        },
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "name": "commencement-id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "post": {
-          "summary": "",
-          "operationId": "post-commencements-commencement-id",
-          "responses": {
-            "201": {
-              "description": "Created"
-            }
-          },
-          "description": "Create a commencement (Eintritt)",
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Commencement"
-                }
-              }
-            }
-          }
-        },
-        "get": {
-          "summary": "",
-          "operationId": "get-commencements-commencement-id",
-          "responses": {
-            "200": {
-              "description": "OK",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/Commencement"
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "Not Found"
-            }
-          },
-          "description": "Read a commencement by commencement-id"
-        }
+        "description": "Post new terminations (Austritte)"
+      }
     },
     "/matches": {
       "get": {
         "operationId": "get-matches",
         "responses": {
-          "default": {
+          "200": {
             "description": "default response",
             "content": {
               "application/json": {
@@ -370,7 +103,18 @@
               }
             }
           }
-        }
+        },
+        "description": "\"Get my matches\" from pension fund (VE) point of view. Could be used by a pension fund as a pull batch service. Pension fund will be identified by OAuth token based on uid of the company.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "uid",
+            "description": "UID of the pension Fund. Must be the same as the uid from the OAuth token."
+          }
+        ]
       }
     },
     "/matches/{match-id}": {
@@ -387,7 +131,7 @@
           }
         ],
         "responses": {
-          "default": {
+          "200": {
             "description": "default response",
             "content": {
               "application/json": {
@@ -396,8 +140,12 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Not Found"
           }
-        }
+        },
+        "description": "Get a match by its id"
       },
       "parameters": [
         {
@@ -408,353 +156,335 @@
           "in": "path",
           "required": true
         }
-      ]
-    },
-    "/matches/{match-id}/rejectBySender": {
-      "post": {
-        "description": "allows the sender to reject the match",
-        "operationId": "rejectMatchBySender",
-        "parameters": [
-          {
-            "name": "matchId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+      ],
+      "patch": {
+        "summary": "",
+        "operationId": "patch-matches-match-id",
         "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {}
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "schema": {
-            "type": "string"
+          "200": {
+            "description": "OK"
           },
-          "name": "match-id",
-          "in": "path",
-          "required": true
-        }
-      ]
-    },
-    "/matches/{match-id}/rejectByReceiver": {
-      "post": {
-        "description": "allows the receiver to reject the match",
-        "operationId": "rejectMatchByReceiver",
-        "parameters": [
-          {
-            "name": "matchId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+          "404": {
+            "description": "Not Found"
           }
-        ],
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {}
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "schema": {
-            "type": "string"
-          },
-          "name": "match-id",
-          "in": "path",
-          "required": true
-        }
-      ]
-    },
-    "/matches/{match-id}/acceptByReceiver": {
-      "post": {
-        "description": "allows the receiver to accept the match",
-        "operationId": "acceptMatchByReceiver",
-        "parameters": [
-          {
-            "name": "matchId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        },
+        "description": "Patch match status (OPEN, ACCEPTED_BY_RECEIVER, REJECTED_BY_RECEIVER, REJECTED_BY_SENDER, CLOSED_BY_SENDER)",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Payment"
+                "type": "string",
+                "enum": [
+                  "OPEN",
+                  "ACCEPTED_BY_RECEIVER",
+                  "REJECTED_BY_RECEIVER",
+                  "REJECTED_BY_SENDER",
+                  "CLOSED_BY_SENDER"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transfers": {
+      "get": {
+        "summary": "Your GET endpoint",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Transfer"
+                  }
+                }
               }
             }
           }
         },
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {}
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "schema": {
-            "type": "string"
-          },
-          "name": "match-id",
-          "in": "path",
-          "required": true
-        }
-      ]
-    },
-    "/matches/{match-id}/acceptBySender": {
-      "post": {
-        "description": "allows the sender to accept the match",
-        "operationId": "acceptMatchBySender",
+        "operationId": "get-transfers",
+        "description": "\"Get my transfers\" from pension fund (VE) point of view. Could be used by a pension fund as a pull batch service. Pension fund will be identified by OAuth token based on uid of the company.",
         "parameters": [
           {
-            "name": "matchId",
-            "in": "path",
-            "required": true,
             "schema": {
               "type": "string"
+            },
+            "in": "query",
+            "name": "uid",
+            "description": "UID of the pension Fund. Must be the same as the uid from the OAuth token. Returns all transfers of the pension fund."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "sender-uid",
+            "description": "UID of the pension Fund. Must be the same as the uid from the OAuth token. Returns transfers with the pension fund as sender."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "receiver-uid",
+            "description": "UID of the pension Fund. Must be the same as the uid from the OAuth token. Returns transfers with the pension fund as receiver."
+          }
+        ]
+      },
+      "post": {
+        "summary": "",
+        "operationId": "post-transfers",
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "description": "Post new transfers with predefined sender and reciever pension funds.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Transfer"
+                }
+              }
             }
           }
-        ],
+        }
+      }
+    },
+    "/transfers/{transfer-id}": {
+      "get": {
+        "summary": "Your GET endpoint",
+        "tags": [],
         "responses": {
-          "default": {
-            "description": "default response",
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found",
             "content": {
-              "application/json": {}
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Transfer"
+                }
+              }
             }
           }
         },
-        "summary": ""
+        "operationId": "get-transfers-transfer-id",
+        "description": "Get a transfer by its id"
       },
       "parameters": [
         {
           "schema": {
             "type": "string"
           },
-          "name": "match-id",
+          "name": "transfer-id",
           "in": "path",
           "required": true
         }
       ]
     }
   },
-  
-
-
-
-
   "components": {
     "schemas": {
-        "Match": {
-            "type": "object",
-            "description": "E/A match",
-            "properties": {
-                "match-id": {
-                "type": "string"
-                },
-                "commencement": {
-                "$ref": "#/components/schemas/Commencement"
-                },
-                "termination": {
-                "$ref": "#/components/schemas/Termination"
-                },
-                "sender": {
-                "$ref": "#/components/schemas/PensionFund"
-                },
-                "receiver": {
-                "$ref": "#/components/schemas/PensionFund"
-                },
-                "payment": {
-                "$ref": "#/components/schemas/Payment"
-                },
-                "status": {
-                "type": "string",
-                "enum": [
-                    "OPEN",
-                    "ACCEPTED_BY_RECEIVER",
-                    "REJECTED_BY_RECEIVER",
-                    "REJECTED_BY_SENDER",
-                    "CLOSED_BY_SENDER"
-                ]
-                },
-                "expires-at": {
-                "type": "string",
-                "format": "date-time"
-                }
-            },
-            "required": [
-                "match-id"
+      "Match": {
+        "type": "object",
+        "description": "E/A match",
+        "properties": {
+          "match-id": {
+            "type": "string"
+          },
+          "commencement": {
+            "$ref": "#/components/schemas/Commencement"
+          },
+          "termination": {
+            "$ref": "#/components/schemas/Termination"
+          },
+          "sender": {
+            "$ref": "#/components/schemas/PensionFund"
+          },
+          "receiver": {
+            "$ref": "#/components/schemas/PensionFund"
+          },
+          "payment": {
+            "$ref": "#/components/schemas/Payment"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "ACCEPTED_BY_RECEIVER",
+              "REJECTED_BY_RECEIVER",
+              "REJECTED_BY_SENDER",
+              "CLOSED_BY_SENDER"
             ]
+          },
+          "expires-at": {
+            "type": "string",
+            "format": "date-time"
+          }
         },
-        "Transfer": {
-            "title": "Transfer",
-            "type": "object",
-            "description": "Transfer",
-            "properties": {
-              "transfer-id": {
-                "type": "string"
-              },
-              "sender-uid": {
-                "type": "string"
-              },
-              "reciever-uid": {
-                "type": "string"
-              },
-              "fzl": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/VestedBenefit"
-                }
-              },
-              "payment": {
-                "$ref": "#/components/schemas/Payment"
-              }
-            },
-            "required": [
-              "transfer-id",
-              "sender",
-              "reciever"
-            ]
-        },
-        "Commencement": {
-            "type": "object",
-            "description": "Eintritt",
-            "properties": {
-              "commencement-id": {
-                "type": "string"
-              },
-              "pension-fund-uid": {
-                "type": "string"
-              },
-              "person-ahv": {
-                "$ref": "#/components/schemas/PersonAHV"
-              },
-              "commencement-at": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "internal-ref": {
-                "type": "string"
-              },
-              "expires-at": {
-                "type": "string",
-                "format": "date-time"
-              }
-            },
-            "required": [
-              "commencement-id",
-              "pension-fund-uid",
-              "person-ahv",
-              "commencement-at",
-              "internal-ref"
-            ]
-        },
-        "Termination": {
-            "type": "object",
-            "description": "Austritt",
-            "properties": {
-              "termination-id": {
-                "type": "string"
-              },
-              "pension-fund-uid": {
-                "type": "string"
-              },
-              "person-ahv": {
-                "$ref": "#/components/schemas/PersonAHV"
-              },
-              "termination-at": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "internal-ref": {
-                "type": "string"
-              },
-              "expires-at": {
-                "type": "string",
-                "format": "date-time"
-              }
-            },
-            "required": [
-              "termination-id",
-              "pension-fund-uid",
-              "person-ahv",
-              "termination-at",
-              "internal-ref"
-            ]
-        },
-        "PensionFund": {
-          "type": "object",
-          "description": "Vorsorgeeinrichtung (VE)",
-          "title": "PensionFund",
-          "properties": {
-            "uid": {
-              "type": "string"
-            },
-            "name": {
-              "type": "string"
-            },
-            "street": {
-              "type": "string"
-            },
-            "zip": {
-              "type": "string"
-            },
-            "city": {
-              "type": "string"
-            },
-            "additional-identifier": {
-              "type": "string"
+        "required": [
+          "match-id"
+        ]
+      },
+      "Transfer": {
+        "title": "Transfer",
+        "type": "object",
+        "description": "Transfer",
+        "properties": {
+          "transfer-id": {
+            "type": "string"
+          },
+          "sender-uid": {
+            "type": "string"
+          },
+          "reciever-uid": {
+            "type": "string"
+          },
+          "fzl": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VestedBenefit"
             }
           },
-          "required": [
-            "uid",
-            "name"
-          ]
+          "payment": {
+            "$ref": "#/components/schemas/Payment"
+          }
         },
-        "VestedBenefit": {
-            "type": "object",
-            "description": "FZL",
-            "title": "VestedBenefit",
-            "properties": {
-              "fzl-id": {
-                "type": "string"
-              },
-              "payment": {
-                "$ref": "#/components/schemas/Payment"
-              },
-              "person-ahv": {
-                "$ref": "#/components/schemas/PersonAHV"
-              },
-              "benefit-info": {
-                "$ref": "#/components/schemas/BenefitInformation"
-              }
-            },
-            "required": [
-              "fzl-id",
-              "person-ahv",
-              "benefit-info"
-            ]
+        "required": [
+          "transfer-id",
+          "sender",
+          "reciever"
+        ]
+      },
+      "Commencement": {
+        "type": "object",
+        "description": "Eintritt",
+        "properties": {
+          "commencement-id": {
+            "type": "string"
+          },
+          "pension-fund-uid": {
+            "type": "string"
+          },
+          "person-ahv": {
+            "$ref": "#/components/schemas/PersonAHV"
+          },
+          "commencement-at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "internal-ref": {
+            "type": "string"
+          },
+          "expires-at": {
+            "type": "string",
+            "format": "date-time"
+          }
         },
-        "Payment": {
+        "required": [
+          "commencement-id",
+          "pension-fund-uid",
+          "person-ahv",
+          "commencement-at",
+          "internal-ref"
+        ]
+      },
+      "Termination": {
+        "type": "object",
+        "description": "Austritt",
+        "properties": {
+          "termination-id": {
+            "type": "string"
+          },
+          "pension-fund-uid": {
+            "type": "string"
+          },
+          "person-ahv": {
+            "$ref": "#/components/schemas/PersonAHV"
+          },
+          "termination-at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "internal-ref": {
+            "type": "string"
+          },
+          "expires-at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "termination-id",
+          "pension-fund-uid",
+          "person-ahv",
+          "termination-at",
+          "internal-ref"
+        ]
+      },
+      "PensionFund": {
+        "type": "object",
+        "description": "Vorsorgeeinrichtung (VE)",
+        "title": "PensionFund",
+        "properties": {
+          "uid": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "zip": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "additional-identifier": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "uid",
+          "name"
+        ]
+      },
+      "VestedBenefit": {
+        "type": "object",
+        "description": "FZL",
+        "title": "VestedBenefit",
+        "properties": {
+          "fzl-id": {
+            "type": "string"
+          },
+          "payment": {
+            "$ref": "#/components/schemas/Payment"
+          },
+          "person-ahv": {
+            "$ref": "#/components/schemas/PersonAHV"
+          },
+          "benefit-info": {
+            "$ref": "#/components/schemas/BenefitInformation"
+          }
+        },
+        "required": [
+          "fzl-id",
+          "person-ahv",
+          "benefit-info"
+        ]
+      },
+      "Payment": {
         "required": [
           "iban"
         ],
@@ -768,8 +498,8 @@
           }
         },
         "description": "Zahlung"
-        },
-        "PersonAHV": {
+      },
+      "PersonAHV": {
         "title": "PersonAHV",
         "type": "object",
         "description": "Person AHV",
@@ -822,13 +552,13 @@
           "telephone": {
             "type": "array",
             "items": {
-                "type": "string"
+              "type": "string"
             }
           },
           "contact-person": {
             "type": "array",
             "items": {
-                "$ref": "#/components/schemas/PersonAHV"
+              "$ref": "#/components/schemas/PersonAHV"
             }
           },
           "health-restriction": {
@@ -850,34 +580,34 @@
           "health-restriction",
           "civil-status"
         ]
+      },
+      "HealthRestriction": {
+        "title": "HealthRestriction",
+        "type": "object",
+        "description": "Gesundheitsvorbehalt",
+        "properties": {
+          "health-restriction-id": {
+            "type": "string"
+          }
         },
-        "HealthRestriction": {
-            "title": "HealthRestriction",
-            "type": "object",
-            "description": "Gesundheitsvorbehalt",
-            "properties": {
-              "health-restriction-id": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "health-restriction-id"
-            ]
+        "required": [
+          "health-restriction-id"
+        ]
+      },
+      "CivilStatus": {
+        "title": "CivilStatus",
+        "type": "object",
+        "description": "Zivilstand",
+        "properties": {
+          "civil-status-id": {
+            "type": "string"
+          }
         },
-        "CivilStatus": {
-            "title": "CivilStatus",
-            "type": "object",
-            "description": "Zivilstand",
-            "properties": {
-              "civil-status-id": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "civil-status-id"
-            ]
-        },
-        "BenefitInformation": {
+        "required": [
+          "civil-status-id"
+        ]
+      },
+      "BenefitInformation": {
         "title": "BenefitInformation",
         "type": "object",
         "description": "Leistungsdaten",
@@ -909,8 +639,8 @@
           "divorce",
           "wef"
         ]
-        },
-        "TransferReason": {
+      },
+      "TransferReason": {
         "title": "TransferReason",
         "type": "object",
         "description": "Übertragungsgrund",
@@ -922,47 +652,47 @@
         "required": [
           "transfer-reason-id"
         ]
+      },
+      "Purchasing": {
+        "title": "Purchasing",
+        "type": "object",
+        "description": "Einkauf",
+        "properties": {
+          "purchasing-id": {
+            "type": "string"
+          }
         },
-        "Purchasing": {
-            "title": "Purchasing",
-            "type": "object",
-            "description": "Einkauf",
-            "properties": {
-              "purchasing-id": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "purchasing-id"
-            ]
+        "required": [
+          "purchasing-id"
+        ]
+      },
+      "Pledge": {
+        "title": "Pledge",
+        "type": "object",
+        "description": "Verpfändung",
+        "properties": {
+          "pledge-id": {
+            "type": "string"
+          }
         },
-        "Pledge": {
-            "title": "Pledge",
-            "type": "object",
-            "description": "Verpfändung",
-            "properties": {
-              "pledge-id": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "pledge-id"
-            ]
+        "required": [
+          "pledge-id"
+        ]
+      },
+      "HousingSubsidy": {
+        "title": "HousingSubsidy",
+        "type": "object",
+        "description": "WEF",
+        "properties": {
+          "wef-id": {
+            "type": "string"
+          }
         },
-        "HousingSubsidy": {
-            "title": "HousingSubsidy",
-            "type": "object",
-            "description": "WEF",
-            "properties": {
-              "wef-id": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "wef-id"
-            ]
-        },
-        "Divorce": {
+        "required": [
+          "wef-id"
+        ]
+      },
+      "Divorce": {
         "title": "Divorce",
         "type": "object",
         "description": "Scheidung",
@@ -974,7 +704,7 @@
         "required": [
           "divorce-id"
         ]
-        }
+      }
     },
     "securitySchemes": {
       "mTLS": {
