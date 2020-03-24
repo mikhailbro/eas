@@ -1,15 +1,15 @@
 {
     "openapi" : "3.0.1",
     "info" : {
-      "title" : "BVG-Match",
-      "description" : "API Dokumentation für die Plattform für den automatischen Datenaustausch bei Eintritten und Austritten zwischen Vorsorgeeinrichtungen.",
-      "version" : "1.0.0-SNAPSHOT"
+      "title" : "EAS API",
+      "description" : "EAS API Dokumentation based on AufE exchange and match",
+      "version" : "0.1"
     },
     "servers" : [ {
-      "url" : "http://localhost:8180/bvgmatch-server"
+      "url" : "https://localhost:8180/eas/api/v1"
     } ],
     "paths" : {
-      "/api/matches" : {
+      "/matches" : {
         "get" : {
           "operationId" : "getMatches",
           "responses" : {
@@ -29,7 +29,7 @@
           }
         }
       },
-      "/api/matches/{matchId}" : {
+      "/matches/{matchId}" : {
         "get" : {
           "operationId" : "getMatch",
           "parameters" : [ {
@@ -54,7 +54,7 @@
           }
         }
       },
-      "/api/commencement" : {
+      "/commencement" : {
         "post" : {
           "operationId" : "addCommencement",
           "requestBody" : {
@@ -76,7 +76,7 @@
           }
         }
       },
-      "/api/termination" : {
+      "/termination" : {
         "post" : {
           "operationId" : "addTermination",
           "requestBody" : {
@@ -98,7 +98,7 @@
           }
         }
       },
-      "/api/matches/{matchId}/rejectBySender" : {
+      "/matches/{matchId}/rejectBySender" : {
         "post" : {
           "description" : "allows the sender to reject the match",
           "operationId" : "rejectMatchBySender",
@@ -120,7 +120,7 @@
           }
         }
       },
-      "/api/allPendingTerminations" : {
+      "/allPendingTerminations" : {
         "post" : {
           "operationId" : "addAllPendingTerminations",
           "requestBody" : {
@@ -142,7 +142,7 @@
           }
         }
       },
-      "/api/matches/{matchId}/rejectByReceiver" : {
+      "/matches/{matchId}/rejectByReceiver" : {
         "post" : {
           "description" : "allows the receiver to reject the match",
           "operationId" : "rejectMatchByReceiver",
@@ -164,7 +164,7 @@
           }
         }
       },
-      "/api/matches/{matchId}/acceptByReceiver" : {
+      "/matches/{matchId}/acceptByReceiver" : {
         "post" : {
           "description" : "allows the receiver to accept the match",
           "operationId" : "acceptMatchByReceiver",
@@ -195,7 +195,7 @@
           }
         }
       },
-      "/api/matches/{matchId}/acceptBySender" : {
+      "/matches/{matchId}/acceptBySender" : {
         "post" : {
           "description" : "allows the sender to accept the match",
           "operationId" : "acceptMatchBySender",
@@ -217,7 +217,7 @@
           }
         }
       },
-      "/api/allPendingCommencements" : {
+      "/allPendingCommencements" : {
         "post" : {
           "operationId" : "addAllPendingCommencements",
           "requestBody" : {
@@ -239,7 +239,7 @@
           }
         }
       },
-      "/api/ping" : {
+      "/ping" : {
         "get" : {
           "operationId" : "ping",
           "responses" : {
