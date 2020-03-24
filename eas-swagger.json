@@ -11,46 +11,92 @@
     }
   ],
   "paths": {
-    "/matches": {
+    "/ping": {
       "get": {
-        "operationId": "get-matches",
+        "operationId": "ping",
         "responses": {
-          "default": {
+          "200": {
             "description": "default response",
             "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Match"
-                  }
+                  "type": "string"
+                },
+                "examples": {
+                  "example-1": {}
+                }
+              }
+            }
+          }
+        },
+        "description": "Check API availability"
+      }
+    },
+    "/commencements": {
+      "post": {
+        "operationId": "create-commencements",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Commencement"
+                }
+              }
+            }
+          }
+        },
+        "description": "Create commencements (Eintritte)",
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      },
+      "put": {
+        "summary": "",
+        "operationId": "put-commencements",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Full update of a commencements array (Eintritte)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Commencement"
                 }
               }
             }
           }
         }
-      }
-    },
-    "/matches/{matchId}": {
-      "get": {
-        "operationId": "get-match",
-        "parameters": [
-          {
-            "name": "matchId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+      },
+      "patch": {
+        "summary": "",
+        "operationId": "patch-commencements",
         "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Match"
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Partial update of a commencements array (Eintritte)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Commencement"
                 }
               }
             }
@@ -166,6 +212,76 @@
         "description": "Read a commencement by commencement-id"
       }
     },
+    "/terminations": {
+      "post": {
+        "operationId": "create-terminations",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Termination"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        },
+        "description": "Create terminations (Austritte)"
+      },
+      "put": {
+        "summary": "",
+        "operationId": "put-terminations",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Full update of terminations (Austritte)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Termination"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "",
+        "operationId": "patch-terminations",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Partial update of terminations (Austritte)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Termination"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/terminations/{termination-id}": {
       "put": {
         "summary": "",
@@ -255,7 +371,54 @@
         "description": "Read a termination (Austritt) by termination-id"
       }
     },
-    "/matches/{matchId}/rejectBySender": {
+    "/matches": {
+      "get": {
+        "operationId": "get-matches",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Match"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matches/{-imatchd}": {
+      "get": {
+        "operationId": "get-match",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Match"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matches/{match-id}/rejectBySender": {
       "post": {
         "description": "allows the sender to reject the match",
         "operationId": "rejectMatchBySender",
@@ -279,7 +442,7 @@
         }
       }
     },
-    "/matches/{matchId}/rejectByReceiver": {
+    "/matches/{match-id}/rejectByReceiver": {
       "post": {
         "description": "allows the receiver to reject the match",
         "operationId": "rejectMatchByReceiver",
@@ -303,7 +466,7 @@
         }
       }
     },
-    "/matches/{matchId}/acceptByReceiver": {
+    "/matches/{match-id}/acceptByReceiver": {
       "post": {
         "description": "allows the receiver to accept the match",
         "operationId": "acceptMatchByReceiver",
@@ -336,7 +499,7 @@
         }
       }
     },
-    "/matches/{matchId}/acceptBySender": {
+    "/matches/{match-id}/acceptBySender": {
       "post": {
         "description": "allows the sender to accept the match",
         "operationId": "acceptMatchBySender",
@@ -355,169 +518,6 @@
             "description": "default response",
             "content": {
               "application/json": {}
-            }
-          }
-        }
-      }
-    },
-    "/ping": {
-      "get": {
-        "operationId": "ping",
-        "responses": {
-          "200": {
-            "description": "default response",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                },
-                "examples": {
-                  "example-1": {}
-                }
-              }
-            }
-          }
-        },
-        "description": "Check API availability"
-      }
-    },
-    "/commencements": {
-      "post": {
-        "operationId": "create-commencements",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Commencement"
-                }
-              }
-            }
-          }
-        },
-        "description": "Create commencements (Eintritte)",
-        "responses": {
-          "201": {
-            "description": "Created"
-          }
-        }
-      },
-      "put": {
-        "summary": "",
-        "operationId": "put-commencements",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "description": "Full update of a commencements array (Eintritte)",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Commencement"
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "summary": "",
-        "operationId": "patch-commencements",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "description": "Partial update of a commencements array (Eintritte)",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Commencement"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/terminations": {
-      "post": {
-        "operationId": "create-terminations",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Termination"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "default response",
-            "content": {
-              "application/json": {}
-            }
-          }
-        },
-        "description": "Create terminations (Austritte)"
-      },
-      "put": {
-        "summary": "",
-        "operationId": "put-terminations",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "description": "Full update of terminations (Austritte)",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Termination"
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "summary": "",
-        "operationId": "patch-terminations",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "description": "Partial update of terminations (Austritte)",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Termination"
-                }
-              }
             }
           }
         }
