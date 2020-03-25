@@ -134,6 +134,15 @@
           "404": {
             "description": "Not Found"
           },
+          "": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Match"
+                }
+              }
+            }
+          }
         }
       },
       "parameters": [
@@ -147,7 +156,7 @@
         }
       ],
       "patch": {
-        "summary": "Update match status (OPEN, ACCEPTED_BY_RECEIVER, REJECTED_BY_RECEIVER, REJECTED_BY_SENDER, CLOSED_BY_SENDER)",
+        "summary": "Update match status",
         "operationId": "patch-matches-match-id",
         "responses": {
           "200": {
@@ -172,7 +181,8 @@
               }
             }
           }
-        }
+        },
+        "description": "Allowed match status values: OPEN, ACCEPTED_BY_RECEIVER, REJECTED_BY_RECEIVER, REJECTED_BY_SENDER, CLOSED_BY_SENDER"
       }
     },
     "/my-transfers": {
