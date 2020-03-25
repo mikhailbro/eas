@@ -13,7 +13,7 @@
   "paths": {
     "/ping": {
       "get": {
-        "summary": "Check API availability.",
+        "summary": "Check EAS API availability",
         "operationId": "ping",
         "responses": {
           "200": {
@@ -39,7 +39,7 @@
     },
     "/commencements": {
       "post": {
-        "summary": "Post new commencements (Eintritte).",
+        "summary": "Post new commencements (Eintritte)",
         "operationId": "create-commencements",
         "requestBody": {
           "content": {
@@ -62,7 +62,7 @@
     },
     "/terminations": {
       "post": {
-        "summary": "Post new terminations (Austritte).",
+        "summary": "Post new terminations (Austritte)",
         "operationId": "create-terminations",
         "requestBody": {
           "content": {
@@ -83,10 +83,10 @@
         }
       }
     },
-    "/matches": {
+    "/my-matches": {
       "get": {
-        "summary": "\"Get my matches\" from pension fund (VE) point of view. Could be used by a pension fund as a pull batch service. Pension fund will be identified by OAuth token based on uid of the company.",
-        "operationId": "get-matches",
+        "summary": "\"Get my matches\" from pension fund (VE) point of view. Could be used by a pension fund as a pull batch service. Pension fund will be identified by OAuth token, based on uid of the company",
+        "operationId": "get-my-matches",
         "responses": {
           "200": {
             "description": "OK",
@@ -100,23 +100,27 @@
                 }
               }
             }
+          },
+          "": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Match"
+                  }
+                }
+              }
+            }
           }
         },
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "uid",
-            "description": "UID of the pension Fund. Must be the same as the uid from the OAuth token."
-          }
-        ]
-      }
+        "parameters": []
+      },
+      "parameters": []
     },
     "/matches/{match-id}": {
       "get": {
-        "summary": "Get a match by match id.",
+        "summary": "Get a match by id",
         "operationId": "get-match",
         "parameters": [
           {
@@ -141,6 +145,15 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Match"
+                }
+              }
+            }
           }
         }
       },
@@ -155,7 +168,7 @@
         }
       ],
       "patch": {
-        "summary": "Patch match status (OPEN, ACCEPTED_BY_RECEIVER, REJECTED_BY_RECEIVER, REJECTED_BY_SENDER, CLOSED_BY_SENDER)",
+        "summary": "Update match status (OPEN, ACCEPTED_BY_RECEIVER, REJECTED_BY_RECEIVER, REJECTED_BY_SENDER, CLOSED_BY_SENDER)",
         "operationId": "patch-matches-match-id",
         "responses": {
           "200": {
@@ -183,9 +196,9 @@
         }
       }
     },
-    "/transfers": {
+    "/my-transfers": {
       "get": {
-        "summary": "\"Get my transfers\" from pension fund (VE) point of view. Could be used by a pension fund as a pull batch service. Pension fund will be identified by OAuth token based on uid of the company.",
+        "summary": "\"Get my transfers\" from pension fund (VE) point of view. Could be used by a pension fund as a pull batch service. Pension fund will be identified by OAuth token, based on uid of the company",
         "tags": [],
         "responses": {
           "200": {
@@ -202,60 +215,14 @@
             }
           }
         },
-        "operationId": "get-transfers",
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "uid",
-            "description": "UID of the pension Fund. Must be the same as the uid from the OAuth token. Returns all transfers of the pension fund."
-          },
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "sender-uid",
-            "description": "UID of the pension Fund. Must be the same as the uid from the OAuth token. Returns transfers with the pension fund as sender."
-          },
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "query",
-            "name": "receiver-uid",
-            "description": "UID of the pension Fund. Must be the same as the uid from the OAuth token. Returns transfers with the pension fund as receiver."
-          }
-        ]
+        "operationId": "get-my-transfers",
+        "parameters": []
       },
-      "post": {
-        "summary": "Post new transfers with predefined sender and reciever pension funds.",
-        "operationId": "post-transfers",
-        "responses": {
-          "201": {
-            "description": "Created"
-          }
-        },
-        "description": "Post new transfers with predefined sender and reciever pension funds.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Transfer"
-                }
-              }
-            }
-          }
-        }
-      }
+      "parameters": []
     },
     "/transfers/{transfer-id}": {
       "get": {
-        "summary": "Get a transfer by transfer id.",
+        "summary": "Get a transfer by id",
         "tags": [],
         "responses": {
           "200": {
@@ -284,6 +251,78 @@
           "required": true
         }
       ]
+    },
+    "/my-received-transfers": {
+      "get": {
+        "summary": "\"Get my received transfers\" from pension fund (VE) point of view. Could be used by a pension fund as a pull batch service. Pension fund will be identified by OAuth token, based on uid of the company",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Transfer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-my-received-transfers",
+        "parameters": []
+      },
+      "parameters": []
+    },
+    "/transfers": {
+      "post": {
+        "summary": "Post new transfers with predefined pension funds as sender and reciever",
+        "operationId": "post-transfers",
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Transfer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": []
+    },
+    "/my-sended-transfers": {
+      "get": {
+        "summary": "\"Get my sended transfers\" from pension fund (VE) point of view. Could be used by a pension fund as a pull batch service. Pension fund will be identified by OAuth token, based on uid of the company",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Transfer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-my-sended-transfers",
+        "parameters": []
+      },
+      "parameters": []
     }
   },
   "components": {
