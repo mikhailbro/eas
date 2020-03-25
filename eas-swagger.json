@@ -100,18 +100,6 @@
                 }
               }
             }
-          },
-          "": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Match"
-                  }
-                }
-              }
-            }
           }
         },
         "parameters": []
@@ -146,15 +134,6 @@
           "404": {
             "description": "Not Found"
           },
-          "": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Match"
-                }
-              }
-            }
-          }
         }
       },
       "parameters": [
