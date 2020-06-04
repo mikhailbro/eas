@@ -316,18 +316,23 @@ components:
         uuid:
           type: string
           description: 'Unique identifier of an API. UUID, Version 4'
+          example: 12345678-abcd-1234-efgh-000000000000
         groupId:
           type: string
           description: Remains the same between different API versions
+          example: 12345678-abcd-1234-efgh-000000000000
         versionMajor:
           type: integer
           description: API major version
+          example: 1
         versionMinor:
           type: integer
           description: API minor version
+          example: 0
         name:
           type: string
           description: API name
+          example: MarketplaceApi_1
         basePath:
           type: string
           description: API base path on the API gateway
@@ -344,6 +349,7 @@ components:
               - sandbox
               - test
               - prod
+            example: sandbox
         gatewayRegistrations:
           type: object
           description: Includes all relevant informations about the API registration on the API gateway
@@ -364,6 +370,7 @@ components:
                 - preprod
                 - prod
                 - sandbox
+              example: sandbox
             corsAllowedOrigins:
               type: array
               description: List of allowed origins in URI format for browser usage
@@ -379,6 +386,7 @@ components:
                 apiKey:
                   type: boolean
                   description: 'True only in case of a public, not protected API'
+                  example: 12345678-abcd-1234-efgh-000000000000
                 oauth:
                   type: array
                   description: 'OAuth credentials, which a predefined by the API provider'
@@ -390,6 +398,7 @@ components:
                         description: Oauth scopes of the API
                         items:
                           type: string
+                          example: bff_nils
                       issuer:
                         type: string
                         example: 'https://maam.axa.com/maam'
@@ -400,9 +409,11 @@ components:
         validFrom:
           type: string
           description: The date from which an API is valid on the developer portal
+          example: '2020-01-01'
         validUntil:
           type: string
           description: The date until which an API is valid on the developer portal
+          example: '2022-01-01'
       required:
         - uuid
         - groupId
@@ -422,15 +433,19 @@ components:
         uuid:
           type: string
           description: 'Unique identifier of an API Product. UUID, Version 4'
+          example: 12345678-abcd-1234-efgh-000000000000
         version:
           type: integer
           description: API Product (major) version
+          example: 1
         name:
           type: string
           description: API Product name
+          example: Cybersecurity
         description:
           type: string
           description: Description of an API Product
+          example: Lorem ipsum
         imageUrl:
           type: string
           description: URL to the API Product image or icon or thumbnail
@@ -440,12 +455,13 @@ components:
           enum:
             - public
             - internal
+          example: public
         tags:
           type: array
           description: An API Product could be tagged on developer portal
           items:
             type: string
-            example: '"health", "security", "customer"'
+            example: health
         apis:
           type: array
           description: APIs that compose the API product
@@ -454,9 +470,11 @@ components:
         validFrom:
           type: string
           description: The date from which an API Product is valid on the developer portal
+          example: '2020-01-01'
         validUntil:
           type: string
           description: The date until which an API Product is valid on the developer portal
+          example: '2022-01-01'
       required:
         - uuid
         - version
@@ -473,15 +491,19 @@ components:
         uuid:
           type: string
           description: 'Unique identifier of an App. UUID, Version 4'
+          example: 12345678-abcd-1234-efgh-000000000000
         version:
           type: string
           description: App (major) version
+          example: '2'
         name:
           type: string
           description: Application name
+          example: Youtube
         description:
           type: string
           description: 'Short description of an application '
+          example: Lorem ipsum
         oauthClient:
           type: array
           description: Represents OAuth registrations of an App
@@ -491,15 +513,19 @@ components:
               clientId:
                 type: string
                 description: OAuth client id
+                example: 123e4567-e89b
               clientSecret:
                 type: string
                 description: OAuth client secret
+                example: 1234-efgh-000000000000
               validFrom:
                 type: string
                 description: The date from which an OAuth client is valid on the developer portal
+                example: '2020-01-01'
               validUntil:
                 type: string
                 description: The date until which an OAuth client is valid on the developer portal
+                example: '2022-01-01'
             required:
               - clientId
               - clientSecret
@@ -507,6 +533,7 @@ components:
         apiKey:
           type: string
           description: 'An API key for usage of public unprotected APIs and API Products. UUID, Version 4'
+          example: 12345678-abcd-1234-efgh-000000000000
         apiProducts:
           type: array
           description: 'API Products, which will be consumed by the App'
@@ -515,9 +542,11 @@ components:
         validFrom:
           type: string
           description: The date from which an App is valid on the developer portal
+          example: '2020-01-01'
         validUntil:
           type: string
           description: The date until which an App is valid on the developer portal
+          example: '2022-01-01'
       required:
         - uuid
         - version
