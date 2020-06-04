@@ -46,8 +46,8 @@ paths:
       summary: post-api-product
       operationId: post-api-product
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
       description: Post an API Product on developer portal
       requestBody:
         content:
@@ -90,8 +90,8 @@ paths:
       summary: post-app
       operationId: post-app
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
       description: Post an App on developer portal
       requestBody:
         content:
@@ -134,8 +134,8 @@ paths:
       summary: patch-api
       operationId: patch-api
       responses:
-        '200':
-          description: OK
+        '206':
+          description: Partial Content
       description: Partial update of an API
       requestBody:
         content:
@@ -194,8 +194,8 @@ paths:
       summary: post-api
       operationId: post-api
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
           headers: {}
       description: Post an API on developer portal
       requestBody:
@@ -238,8 +238,8 @@ paths:
       summary: patch-app
       operationId: patch-app
       responses:
-        '200':
-          description: OK
+        '206':
+          description: Partial Content
       description: Partial update of an App
       requestBody:
         content:
@@ -289,8 +289,8 @@ paths:
       summary: patch-api-product
       operationId: patch-api-product
       responses:
-        '200':
-          description: OK
+        '206':
+          description: Partial Content
       description: Partial update of an API Product
       requestBody:
         content:
