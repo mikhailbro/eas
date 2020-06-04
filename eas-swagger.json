@@ -37,146 +37,6 @@
         }
       }
     },
-    "/commencements": {
-      "post": {
-        "summary": "Post new commencements (Eintritte)",
-        "operationId": "create-commencements",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Commencement"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Created"
-          }
-        }
-      }
-    },
-    "/terminations": {
-      "post": {
-        "summary": "Post new terminations (Austritte)",
-        "operationId": "create-terminations",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Termination"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Created"
-          }
-        }
-      }
-    },
-    "/my-matches": {
-      "get": {
-        "summary": "\"Get my matches\" from the pension fund (VE) point of view",
-        "operationId": "get-my-matches",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Match"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "parameters": [],
-        "description": "Could be used by a pension fund as a pull batch service. Pension fund will be identified by OAuth token, based on uid of the company"
-      },
-      "parameters": []
-    },
-    "/matches/{match-id}": {
-      "get": {
-        "summary": "Get a match by id",
-        "operationId": "get-match",
-        "parameters": [
-          {
-            "name": "matchId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Match"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      },
-      "parameters": [
-        {
-          "schema": {
-            "type": "string"
-          },
-          "name": "match-id",
-          "in": "path",
-          "required": true
-        }
-      ],
-      "patch": {
-        "summary": "Update match status",
-        "operationId": "patch-matches-match-id",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "string",
-                "enum": [
-                  "OPEN",
-                  "ACCEPTED_BY_RECEIVER",
-                  "REJECTED_BY_RECEIVER",
-                  "REJECTED_BY_SENDER",
-                  "CLOSED_BY_SENDER"
-                ]
-              }
-            }
-          }
-        },
-        "description": "Allowed match status values: OPEN, ACCEPTED_BY_RECEIVER, REJECTED_BY_RECEIVER, REJECTED_BY_SENDER, CLOSED_BY_SENDER"
-      }
-    },
     "/my-transfers": {
       "get": {
         "summary": "\"Get my transfers\" from the pension fund (VE) point of view",
@@ -259,6 +119,30 @@
       },
       "parameters": []
     },
+    "/transfers": {
+      "post": {
+        "summary": "Post new transfers with predefined pension funds as sender and reciever",
+        "operationId": "post-transfers",
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Transfer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": []
+    },
     "/my-sended-transfers": {
       "get": {
         "summary": "\"Get my sended transfers\" from the pension fund (VE) point of view",
@@ -284,10 +168,16 @@
       },
       "parameters": []
     },
-    "/transfers": {
+    "/test": {
+      "get": {
+        "summary": "Your GET endpoint",
+        "tags": [],
+        "responses": {},
+        "operationId": "get-test"
+      },
       "post": {
-        "summary": "Post new transfers with predefined pension funds as sender and reciever",
-        "operationId": "post-transfers",
+        "summary": "",
+        "operationId": "post-test",
         "responses": {
           "201": {
             "description": "Created"
@@ -297,16 +187,12 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Transfer"
-                }
+                "$ref": "#/components/schemas/Payment"
               }
             }
           }
         }
-      },
-      "parameters": []
+      }
     }
   },
   "components": {

@@ -1,0 +1,116 @@
+openapi: 3.0.0
+info:
+  title: developer-portal-api
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths: {}
+components:
+  schemas:
+    Api:
+      title: Api
+      type: object
+      description: represents an API
+      x-examples: {}
+      properties:
+        uuid:
+          type: string
+          description: 'Unique identifier of an API. UUID, Version 4'
+        groupId:
+          type: string
+          description: Remains the same between different API versions
+        versionMajor:
+          type: integer
+          description: API major version
+        versionMinor:
+          type: integer
+          description: API minor version
+        name:
+          type: string
+          description: API name
+        basePath:
+          type: string
+          description: API base path on the API gateway
+          example: /rest/marketplace/customer/v1
+        openApiDef:
+          type: object
+          description: 'Open API Specification Document (Swagger), which describes the API'
+        stages:
+          type: array
+          description: Describes on which developer portal stage is this API exposed
+          items:
+            type: string
+            enum:
+              - sandbox
+              - test
+              - prod
+        gatewayRegistrations:
+          type: object
+          description: Includes all relevant informations about the API registration on the API gateway
+          required:
+            - name
+            - stage
+            - consumerAuth
+          properties:
+            name:
+              type: string
+              description: API name on the API gateway
+              example: MarketplaceCustomerApi_1-app-2624-1
+            stage:
+              type: string
+              description: Stage of the API gateway
+              enum:
+                - dev
+                - preprod
+                - prod
+                - sandbox
+            corsAllowedOrigins:
+              type: array
+              description: List of allowed origins in URI format for browser usage
+              items:
+                type: string
+                example: 'https://secure.axa.ch'
+            consumerAuth:
+              type: object
+              description: shows allowed API authentication provider types
+              required:
+                - apiKey
+              properties:
+                apiKey:
+                  type: boolean
+                  description: 'True only in case of a public, not protected API'
+                oauth:
+                  type: array
+                  description: 'OAuth credentials, which a predefined by the API provider'
+                  items:
+                    type: object
+                    properties:
+                      scopes:
+                        type: array
+                        description: Oauth scopes of the API
+                        items:
+                          type: string
+                      issuer:
+                        type: string
+                        example: 'https://maam.axa.com/maam'
+                        description: Allowed token issuer
+                    required:
+                      - scopes
+                      - issuer
+        validFrom:
+          type: string
+          description: The date from which an API is valid on the developer portal
+        validUntil:
+          type: string
+          description: The date until which an API is valid on the developer portal
+      required:
+        - uuid
+        - groupId
+        - versionMajor
+        - versionMinor
+        - name
+        - basePath
+        - openApiDef
+        - stages
+        - gatewayRegistrations
+        - validFrom
