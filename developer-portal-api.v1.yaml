@@ -376,7 +376,6 @@ components:
               description: List of allowed origins in URI format for browser usage
               items:
                 type: string
-                example: 'https://secure.axa.ch'
             consumerAuth:
               type: object
               description: shows allowed API authentication provider types
@@ -386,7 +385,7 @@ components:
                 apiKey:
                   type: boolean
                   description: 'True only in case of a public, not protected API'
-                  example: 12345678-abcd-1234-efgh-000000000000
+                  example: 'false'
                 oauth:
                   type: array
                   description: 'OAuth credentials, which a predefined by the API provider'
@@ -401,7 +400,6 @@ components:
                           example: bff_nils
                       issuer:
                         type: string
-                        example: 'https://maam.axa.com/maam'
                         description: Allowed token issuer
                     required:
                       - scopes
@@ -445,7 +443,6 @@ components:
         description:
           type: string
           description: Description of an API Product
-          example: Lorem ipsum
         imageUrl:
           type: string
           description: URL to the API Product image or icon or thumbnail
@@ -503,7 +500,6 @@ components:
         description:
           type: string
           description: 'Short description of an application '
-          example: Lorem ipsum
         oauthClient:
           type: array
           description: Represents OAuth registrations of an App
