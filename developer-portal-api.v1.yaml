@@ -109,11 +109,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Api'
-        '':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Api'
       operationId: get-api-by-id
       description: Return an API to an API UUID
     parameters:
