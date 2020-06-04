@@ -7,7 +7,7 @@ servers:
 paths:
   /api-products:
     get:
-      summary: Your GET endpoint
+      summary: get-api-products
       tags: []
       responses:
         '200':
@@ -30,9 +30,9 @@ paths:
           in: query
           name: type
         - schema:
-            type: array
+            type: string
           in: query
-          name: tags
+          name: tag
         - schema:
             type: string
           in: query
@@ -43,7 +43,7 @@ paths:
           name: validUntil
     parameters: []
     post:
-      summary: ''
+      summary: post-api-product
       operationId: post-api-product
       responses:
         '200':
@@ -56,7 +56,7 @@ paths:
               $ref: '#/components/schemas/ApiProduct'
   /apps:
     get:
-      summary: Your GET endpoint
+      summary: get-apps
       tags: []
       responses:
         '200':
@@ -87,7 +87,7 @@ paths:
           in: query
           name: validUntil
     post:
-      summary: ''
+      summary: post-app
       operationId: post-app
       responses:
         '200':
@@ -100,7 +100,7 @@ paths:
               $ref: '#/components/schemas/App'
   '/apis/{uuid}':
     get:
-      summary: Your GET endpoint
+      summary: get-api-by-id
       tags: []
       responses:
         '200':
@@ -108,7 +108,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: ''
+                $ref: '#/components/schemas/Api'
         '':
           content:
             application/json:
@@ -123,12 +123,12 @@ paths:
         in: path
         required: true
     put:
-      summary: ''
+      summary: put-api
       operationId: put-api
       responses:
         '200':
           description: OK
-      description: c
+      description: Partial update of an API
       requestBody:
         content:
           application/json:
@@ -136,7 +136,7 @@ paths:
               $ref: '#/components/schemas/Api'
         description: ''
     patch:
-      summary: ''
+      summary: patch-api
       operationId: patch-api
       responses:
         '200':
@@ -149,7 +149,7 @@ paths:
               $ref: '#/components/schemas/Api'
         description: ''
     delete:
-      summary: ''
+      summary: delete-api
       operationId: delete-api
       responses:
         '204':
@@ -157,7 +157,7 @@ paths:
       description: Deletes an API from developer portal
   /apis:
     get:
-      summary: Your GET endpoint
+      summary: get-apis
       tags: []
       responses:
         '200':
@@ -196,7 +196,7 @@ paths:
           in: query
           name: validUntil
     post:
-      summary: ''
+      summary: post-api
       operationId: post-api
       responses:
         '200':
@@ -216,7 +216,7 @@ paths:
         in: path
         required: true
     get:
-      summary: Your GET endpoint
+      summary: get-app-by-id
       tags: []
       responses:
         '200':
@@ -228,7 +228,7 @@ paths:
       operationId: get-app-by-id
       description: Return an API to an API UUID
     put:
-      summary: ''
+      summary: put-app
       operationId: put-app
       responses:
         '200':
@@ -240,7 +240,7 @@ paths:
             schema:
               $ref: '#/components/schemas/App'
     patch:
-      summary: ''
+      summary: patch-app
       operationId: patch-app
       responses:
         '200':
@@ -252,7 +252,7 @@ paths:
             schema:
               $ref: '#/components/schemas/App'
     delete:
-      summary: ''
+      summary: delete-app
       operationId: delete-app
       responses:
         '204':
@@ -266,7 +266,7 @@ paths:
         in: path
         required: true
     get:
-      summary: Your GET endpoint
+      summary: get-api-product-by-id
       tags: []
       responses:
         '200':
@@ -278,7 +278,7 @@ paths:
       operationId: get-api-product-by-id
       description: Return an API Product to an API UUID
     put:
-      summary: ''
+      summary: put-api-product
       operationId: put-api-product
       responses:
         '200':
@@ -291,7 +291,7 @@ paths:
               $ref: '#/components/schemas/ApiProduct'
         description: ''
     patch:
-      summary: ''
+      summary: patch-api-product
       operationId: patch-api-product
       responses:
         '200':
@@ -304,7 +304,7 @@ paths:
               $ref: '#/components/schemas/ApiProduct'
         description: ''
     delete:
-      summary: ''
+      summary: delete-api-product
       operationId: delete-api-product
       responses:
         '204':
