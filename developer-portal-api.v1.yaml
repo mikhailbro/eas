@@ -4,7 +4,312 @@ info:
   version: '1.0'
 servers:
   - url: 'http://localhost:3000'
-paths: {}
+paths:
+  /api-products:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApiProduct'
+      operationId: get-api-products
+      description: Returns an API Product array based on query string parameter search
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: name
+        - schema:
+            type: string
+          in: query
+          name: type
+        - schema:
+            type: array
+          in: query
+          name: tags
+        - schema:
+            type: string
+          in: query
+          name: validFrom
+        - schema:
+            type: string
+          in: query
+          name: validUntil
+    parameters: []
+    post:
+      summary: ''
+      operationId: post-api-product
+      responses:
+        '200':
+          description: OK
+      description: Post an API Product on developer portal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiProduct'
+  /apps:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/App'
+      operationId: get-apps
+      description: Returns an Apps array based on query string parameter search
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: name
+        - schema:
+            type: string
+          in: query
+          name: apiProduct
+        - schema:
+            type: string
+          in: query
+          name: validFrom
+        - schema:
+            type: string
+          in: query
+          name: validUntil
+    post:
+      summary: ''
+      operationId: post-app
+      responses:
+        '200':
+          description: OK
+      description: Post an App on developer portal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/App'
+  '/apis/{uuid}':
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ''
+        '':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Api'
+      operationId: get-api-by-id
+      description: Return an API to an API UUID
+    parameters:
+      - schema:
+          type: string
+        name: uuid
+        in: path
+        required: true
+    put:
+      summary: ''
+      operationId: put-api
+      responses:
+        '200':
+          description: OK
+      description: c
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Api'
+        description: ''
+    patch:
+      summary: ''
+      operationId: patch-api
+      responses:
+        '200':
+          description: OK
+      description: Partial update of an API
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Api'
+        description: ''
+    delete:
+      summary: ''
+      operationId: delete-api
+      responses:
+        '204':
+          description: No Content
+      description: Deletes an API from developer portal
+  /apis:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Api'
+      operationId: get-apis
+      description: Returns an API array based on query string parameter search
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: groupId
+        - schema:
+            type: string
+          in: query
+          name: name
+        - schema:
+            type: string
+          in: query
+          name: basePath
+        - schema:
+            type: string
+          in: query
+          name: stage
+        - schema:
+            type: string
+          in: query
+          name: validFrom
+        - schema:
+            type: string
+          in: query
+          name: validUntil
+    post:
+      summary: ''
+      operationId: post-api
+      responses:
+        '200':
+          description: OK
+          headers: {}
+      description: Post an API on developer portal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Api'
+  '/apps/{uuid}':
+    parameters:
+      - schema:
+          type: string
+        name: uuid
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/App'
+      operationId: get-app-by-id
+      description: Return an API to an API UUID
+    put:
+      summary: ''
+      operationId: put-app
+      responses:
+        '200':
+          description: OK
+      description: Partial update of an App
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/App'
+    patch:
+      summary: ''
+      operationId: patch-app
+      responses:
+        '200':
+          description: OK
+      description: Partial update of an App
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/App'
+    delete:
+      summary: ''
+      operationId: delete-app
+      responses:
+        '204':
+          description: No Content
+      description: Deletes an App from developer portal
+  '/api-products/{uuid}':
+    parameters:
+      - schema:
+          type: string
+        name: uuid
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiProduct'
+      operationId: get-api-product-by-id
+      description: Return an API Product to an API UUID
+    put:
+      summary: ''
+      operationId: put-api-product
+      responses:
+        '200':
+          description: OK
+      description: Partial update of an API Product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiProduct'
+        description: ''
+    patch:
+      summary: ''
+      operationId: patch-api-product
+      responses:
+        '200':
+          description: OK
+      description: Partial update of an API Product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiProduct'
+        description: ''
+    delete:
+      summary: ''
+      operationId: delete-api-product
+      responses:
+        '204':
+          description: No Content
+      description: Deletes an API Product from developer portal
 components:
   schemas:
     Api:
@@ -113,4 +418,115 @@ components:
         - openApiDef
         - stages
         - gatewayRegistrations
+        - validFrom
+    ApiProduct:
+      title: ApiProduct
+      type: object
+      description: represents an API product
+      properties:
+        uuid:
+          type: string
+          description: 'Unique identifier of an API Product. UUID, Version 4'
+        version:
+          type: integer
+          description: API Product (major) version
+        name:
+          type: string
+          description: API Product name
+        description:
+          type: string
+          description: Description of an API Product
+        imageUrl:
+          type: string
+          description: URL to the API Product image or icon or thumbnail
+        type:
+          type: string
+          description: 'shows the API Product exposure: internal or public'
+          enum:
+            - public
+            - internal
+        tags:
+          type: array
+          description: An API Product could be tagged on developer portal
+          items:
+            type: string
+            example: '"health", "security", "customer"'
+        apis:
+          type: array
+          description: APIs that compose the API product
+          items:
+            $ref: '#/components/schemas/Api'
+        validFrom:
+          type: string
+          description: The date from which an API Product is valid on the developer portal
+        validUntil:
+          type: string
+          description: The date until which an API Product is valid on the developer portal
+      required:
+        - uuid
+        - version
+        - name
+        - description
+        - type
+        - apis
+        - validFrom
+    App:
+      title: App
+      type: object
+      description: represents an API Product consumer application
+      properties:
+        uuid:
+          type: string
+          description: 'Unique identifier of an App. UUID, Version 4'
+        version:
+          type: string
+          description: App (major) version
+        name:
+          type: string
+          description: Application name
+        description:
+          type: string
+          description: 'Short description of an application '
+        oauthClient:
+          type: array
+          description: Represents OAuth registrations of an App
+          items:
+            type: object
+            properties:
+              clientId:
+                type: string
+                description: OAuth client id
+              clientSecret:
+                type: string
+                description: OAuth client secret
+              validFrom:
+                type: string
+                description: The date from which an OAuth client is valid on the developer portal
+              validUntil:
+                type: string
+                description: The date until which an OAuth client is valid on the developer portal
+            required:
+              - clientId
+              - clientSecret
+              - validFrom
+        apiKey:
+          type: string
+          description: 'An API key for usage of public unprotected APIs and API Products. UUID, Version 4'
+        apiProducts:
+          type: array
+          description: 'API Products, which will be consumed by the App'
+          items:
+            $ref: '#/components/schemas/ApiProduct'
+        validFrom:
+          type: string
+          description: The date from which an App is valid on the developer portal
+        validUntil:
+          type: string
+          description: The date until which an App is valid on the developer portal
+      required:
+        - uuid
+        - version
+        - name
+        - description
+        - apiProducts
         - validFrom
