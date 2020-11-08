@@ -1,0 +1,37 @@
+openapi: '3.0.0'
+info:
+  title: info-objects
+  version: '1.0'
+servers:
+- url: http://localhost:3000
+paths: {}
+components:
+  schemas: {
+
+      "Bla": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "begin": {
+            "type": "string",
+            "format": "date"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          }
+        }
+      },
+      "Blubb": {
+        "type": "object",
+        "properties": {
+          "postalCode": {
+            "type": "string"
+          }
+        }
+      }
+  }
