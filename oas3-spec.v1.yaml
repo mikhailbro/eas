@@ -1,0 +1,98 @@
+openapi: 3.0.3
+info:
+  title: Marketplace API
+  version: 0.5.0
+servers:
+  - url: 'https://api-sandbox.ch/rest/marketplace'
+    description: Sandbox APIs
+paths:
+  /mortgage-insurance/v1/quotes:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MortgageQuote'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MortgageQuote'
+      operationId: createMortgageInsuranceQuote
+  /mortgage-insurance/v1/contracts:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - $ref: '#/components/schemas/MortgageContract'
+              - $ref: '#/components/schemas/MortgageContractByQuote'
+              discriminator:
+                propertyName: contractCreationType
+                mapping:
+                  standalone: '#/components/schemas/MortgageContract'
+                  byQuote: '#/components/schemas/MortgageContractByQuote'  
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MortgageContract'
+      operationId: createMortgageInsuranceContract
+components:
+  schemas:
+    MortgageQuote:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              readOnly: true
+        - $ref: '#/components/schemas/MortgageQuoteAttributes'
+    MortgageQuoteAttributes:
+      type: object
+      properties:
+        mortgageAmount:
+          type: number
+          format: decimal
+        mortgageRate:
+          type: number
+          format: decimal
+        insuranceNetPremium:
+          type: number
+          format: decimal
+          readOnly: true
+    MortgageContract:
+      allOf:
+      - type: object
+        required:
+          - contractCreationType
+        properties:
+          id:
+            type: string
+            readOnly: true
+          contractCreationType:
+            type: string
+      - $ref: '#/components/schemas/MortgageQuoteAttributes'
+      - $ref: '#/components/schemas/MortgageContractAdditionalAttributes'
+    MortgageContractByQuote:
+      allOf:
+      - type: object
+        required:
+          - contractCreationType
+        properties:
+          quoteId:
+            type: string
+          contractCreationType:
+            type: string
+      - $ref: '#/components/schemas/MortgageContractAdditionalAttributes'
+    MortgageContractAdditionalAttributes:
+      type: object
+      properties:
+        postalCode:
+            type: string
+      
